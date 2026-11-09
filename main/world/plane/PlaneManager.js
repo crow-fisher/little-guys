@@ -13,7 +13,7 @@ export class PlaneManager extends RuntimeComponent {
         this.blockManager = blockManager;
         this.staticPlanes = [];
         this.livePlanes = [];
-        this.planes = [this.staticPlanes, this.livePlanes]
+        this.planes = [null, this.staticPlanes, this.livePlanes]
     }
 
     di(mainManager) {
@@ -47,7 +47,6 @@ export class PlaneManager extends RuntimeComponent {
 
             this.clickIdx++;
         }
-
     }
 
     update() {
@@ -149,7 +148,7 @@ export class PlaneManager extends RuntimeComponent {
                 this.__sx = Math.floor(this._sx);
                 this.__sy = Math.floor(this._sy);
 
-                this.brush(this.activePlane().getBox(this.__sx, this.__sy));
+                this.brush(this.activePlane().getBox(this.__sx, this.__sy, true));
             }
         }
     }

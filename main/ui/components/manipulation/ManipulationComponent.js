@@ -92,43 +92,6 @@ export class ManipulationComponent extends Component {
     }
 
     getDefaultConfig() {
-        return {
-            colorConfig: {
-                h: 0,
-                s: 0.5,
-                v: 0.5,
-                a: 1,
-                colorHistory: [],
-                rgbaArr: [127, 127, 127, 1]
-            },
-            brush: {
-                brushSize: 20,
-                brushStrength: -20
-            },
-            static: {},
-            live: {
-                materialConfig: {
-                    type: 0,
-                    sand: 0.33,
-                    silt: 0.33,
-                    clay: 0.34,
-                    offsetHue: 0,
-                    offsetSaturation: 0,
-                    offsetValue: 0
-                }
-            },
-            plane: {
-                active: 0,
-                staticIdx: 0,
-                liveIdx: 0
-            },
-            default: {},
-            offsetScale: {
-                offsetX: this.ggvUISize() * 12,
-                offsetY: this.ggvUISize() * 12,
-                sizeX: this.ggvUISize() * 80,
-                sizeY: this.ggvUISize() * 128
-            }
-        }
+        return {"colorConfig":{"h":0,"s":0.5,"v":0.5,"a":1,"colorHistory":[],"rgbaArr":[127,127,127,1]},"brush":{"brushSize":20,"brushStrength":-20},"static":{},"live":{"materialConfig":{"type":1,"sand":0.33,"silt":0.33,"clay":0.34,"offsetHue":0,"offsetSaturation":0,"offsetValue":0}},"plane":{"active":1,"staticIdx":0,"liveIdx":0},"default":{},"offsetScale":{"offsetX":43,"offsetY":56,"sizeX":385,"sizeY":349}}
     }
 }

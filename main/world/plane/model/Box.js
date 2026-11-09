@@ -6,23 +6,27 @@ export class Box {
         
         this.squares = [];
         this.lastTouched = Date.now();
-
-        this.nbTopTop;
-        this.nbTop;
-        this.nbLeft;
-        this.nbRight;
-        this.nbBot;
     }
 
-    update(planeManager) {
+    nbLeft(plane, create=false) {
+        return plane.getBox(this.posX - 1, this.posY, create)
+    }
+    nbRight(plane, create=false) {
+        return plane.getBox(this.posX + 1, this.posY, create)
+    }
+    nbBot(plane, create=false) {
+        return plane.getBox(this.posX, this.posY + 1, create)
+    }
+
+    update(plane) {
         for (let i = 0; i < this.squares.length; i++) {
-            this.squares.at(i)?.update(planeManager);
+            this.squares.at(i)?.update(this, plane);
         }
     }
 
-    render(planeManager) {
+    render(plane) {
         for (let i = 0; i < this.squares.length; i++) {
-            this.squares.at(i)?.render(planeManager);
+            this.squares.at(i)?.render(plane);
         }
     }
 }

@@ -5,11 +5,12 @@ import { Square } from "./Square.js";
 export class StaticSquare extends Square {
     constructor(posX, posY, color) {
         super(posX, posY);
+        this.PID = 0;
         this.renderColor = color;
         this.renderColorRgba = rgbToRgba(...color);
     }
 
-    update(planeManager) {
+    update(box, plane) {
     }
 
     updateColor() {
