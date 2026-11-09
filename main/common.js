@@ -266,6 +266,11 @@ export function hsv2rgba(h, s, v, a) {
     return [f(5), f(3), f(1), a];
 }
 
+export function hsvaToRgba(h, s, v, a, m=256) {
+    let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+    return [f(5) * m, f(3) * m, f(1) * m, a]
+}
+
 // maximum value: 1024 (2 ** 10, clayRate ** power)
 let getWaterflowRateCache = new Map();
 export function cachedGetWaterflowRate(sand, silt, clay) {

@@ -1,8 +1,7 @@
-import { hsvaToRgba } from "../../../../../OLD_GAME/common.js";
 import { rgbToRgba } from "../../../../color/color.js";
-import { rgb2hsv } from "../../../../common.js";
+import { hsvaToRgba, rgb2hsv } from "../../../../common.js";
 import { clamp } from "../../../../util/func.js";
-import { addVectors, multiplyVectorByScalar, multiplyVectorByScalarCopy } from "../../../../util/vector.js";
+import { addVectors, multiplyVectorByScalarCopy } from "../../../../util/vector.js";
 import { Square } from "./Square.js";
 
 export class LiveSquare extends Square {
@@ -47,7 +46,7 @@ export class LiveSquare extends Square {
         this.silt *= (1 / sum);
         this.sand *= (1 / sum);
         this.clay = clamp(this.clay);
-        this.silt = clamp(this.silt);
+        this.silt = clamp(this.silt, 0, 1 - this.clay);
         this.sand = 1 - (this.clay + this.silt);
 
     }
