@@ -76,9 +76,6 @@ export class CameraManager extends RuntimeComponent {
         this.windowWidth = this.totalWidth / this.camera2Zoom;
         this.windowHeight = this.totalHeight / this.camera2Zoom;
 
-        this.windowWidth -= this.windowWidth % this.camera2Zoom;
-        this.windowHeight -= this.windowHeight % this.camera2Zoom;
-
 
         this.windowWidthStart = this.camera2ViewportCenter[0] - (this.windowWidth / 2);
         this.windowHeightStart = this.camera2ViewportCenter[1] - (this.windowHeight / 2);

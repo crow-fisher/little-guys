@@ -18,8 +18,6 @@ export class LiveSquare extends Square {
     }
     render(planeManager) {
         super.render(planeManager);
-        // this.renderText(planeManager, this.posY)
-        this.renderText(planeManager, Math.round((this.posY ** 2 + this.posX ** 2) ** 0.5))
     }
 
     processMaterialConfig(materialConfig) {

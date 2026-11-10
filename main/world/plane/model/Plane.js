@@ -25,7 +25,7 @@ export class Plane {
         for (let i = this.planeManager.cameraManager.windowWidthStart; i <= this.planeManager.cameraManager.windowWidthEnd; i++) {
             if (this.boxes.get(i) == null)
                 continue;
-            for (let j = this.planeManager.cameraManager.windowHeightStart; j <= this.planeManager.cameraManager.windowHeightEnd; j++) {
+            for (let j = this.planeManager.cameraManager.windowHeightEnd; j >= this.planeManager.cameraManager.windowHeightStart; j--) {
                 let b = this.boxes.get(i)?.get(j);
                 if (b) {
                     this.tickBoxes.push(b);
