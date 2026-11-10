@@ -6,6 +6,8 @@ import { Square } from "./model/square/Square.js";
 import { Plane } from "./model/Plane.js";
 import { LiveSquare } from "./model/square/LiveSquare.js";
 import { StaticSquare } from "./model/square/StaticSquare.js";
+import { StaticLightManager } from "./model/lighting/StaticLightManager.js";
+import { LiveLightManager } from "./model/lighting/LiveLightManager.js";
 
 export class PlaneManager extends RuntimeComponent {
     constructor(blockManager) {
@@ -14,6 +16,7 @@ export class PlaneManager extends RuntimeComponent {
         this.staticPlanes = [];
         this.livePlanes = [];
         this.planes = [null, this.staticPlanes, this.livePlanes]
+        this.lightingManagers = [null, this.staticLightManager, this.liveLightManager]
     }
 
     di(mainManager) {
@@ -29,6 +32,19 @@ export class PlaneManager extends RuntimeComponent {
         this.clickTime = 0;
         this.clickPoints = [];
         this.clickIdx = -1;
+    }
+
+    update() {
+        this.mcc = this.uiManager.manipulationComponent.config();
+        this.prepareBrushes();
+        this.clickRoutine();
+        this.staticPlanes.forEach((plane) => plane.update());
+        this.livePlanes.forEach((plane) => plane.update());
+}
+
+    render() {
+        this.staticPlanes.forEach((plane) => plane.render());
+        this.livePlanes.forEach((plane) => plane.render());
     }
 
     clickRoutine() {
@@ -49,27 +65,14 @@ export class PlaneManager extends RuntimeComponent {
         }
     }
 
-    update() {
-        this.mcc = this.uiManager.manipulationComponent.config();
-        this.prepareBrushes();
-        this.clickRoutine();
-        this.staticPlanes.forEach((plane) => plane.update());
-        this.livePlanes.forEach((plane) => plane.update());
-    }
-
-    render() {
-        this.staticPlanes.forEach((plane) => plane.render());
-        this.livePlanes.forEach((plane) => plane.render());
-    }
-
     activePlane() {
         if (this.mcc.plane.active == 0) {
-            this.staticPlanes[this.mcc.plane.staticIdx] = this.staticPlanes[this.mcc.plane.staticIdx] ?? new Plane(this);
-            return this.staticPlanes[this.mcc.plane.staticIdx]
+            this.staticPlanes[this.mcc.plane.staticIdx] = this.staticPlanes[this.mcc.plane.staticIdx] ?? new Plane(this, new StaticLightManager(this));
+            return this.staticPlanes[this.mcc.plane.staticIdx];
         }
         if (this.mcc.plane.active == 1) {
-            this.livePlanes[this.mcc.plane.liveIdx] = this.livePlanes[this.mcc.plane.liveIdx] ?? new Plane(this);
-            return this.livePlanes[this.mcc.plane.liveIdx]
+            this.livePlanes[this.mcc.plane.liveIdx] = this.livePlanes[this.mcc.plane.liveIdx] ?? new Plane(this, new LiveLightManager(this));
+            return this.livePlanes[this.mcc.plane.liveIdx];
         }
     }
 

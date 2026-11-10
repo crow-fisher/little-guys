@@ -6,7 +6,6 @@ export class WorldManager extends RuntimeComponent {
     constructor() {
         super();
         this.starManager = new StarManager(this);
-
         this.planeManager = new PlaneManager(this);
     }
 

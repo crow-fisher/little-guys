@@ -1,8 +1,9 @@
 import { Box } from "./Box.js";
 
 export class Plane {
-    constructor(planeManager) {
-        this.planeManager = planeManager;
+    constructor(planeManager, lightManager) {
+        this.planeManager = planeManager; 
+        this.lightManager = lightManager;
         this.boxes = new Map();
         this.tickBoxes = [];
     }
@@ -18,6 +19,8 @@ export class Plane {
     update() {
         this.updateTickBoxes();
         this.updateBoxes();
+
+        this.lightManager.update(this);
     }
 
     updateTickBoxes() {
