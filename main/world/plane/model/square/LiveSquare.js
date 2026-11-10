@@ -13,13 +13,13 @@ export class LiveSquare extends Square {
         this.randomize();
         this.processColor();
     }
-    /* public */
     update(box, planeManager) {
         this.gravityPhysics(box, planeManager);
     }
-    /* public */
-    render(canvasManager) {
-        super.render(canvasManager);
+    render(planeManager) {
+        super.render(planeManager);
+        // this.renderText(planeManager, this.posY)
+        this.renderText(planeManager, Math.round((this.posY ** 2 + this.posX ** 2) ** 0.5))
     }
 
     processMaterialConfig(materialConfig) {

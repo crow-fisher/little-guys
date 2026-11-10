@@ -7,7 +7,16 @@ export class Box {
         this.squares = [];
         this.lastTouched = Date.now();
     }
-
+    update(plane) {
+        for (let i = 0; i < this.squares.length; i++) {
+            this.squares.at(i)?.update(this, plane);
+        }
+    }
+    render(plane) {
+        for (let i = 0; i < this.squares.length; i++) {
+            this.squares.at(i)?.render(plane);
+        }
+    }
     nbLeft(plane, create=false) {
         return plane.getBox(this.posX - 1, this.posY, create)
     }
@@ -18,15 +27,4 @@ export class Box {
         return plane.getBox(this.posX, this.posY + 1, create)
     }
 
-    update(plane) {
-        for (let i = 0; i < this.squares.length; i++) {
-            this.squares.at(i)?.update(this, plane);
-        }
-    }
-
-    render(plane) {
-        for (let i = 0; i < this.squares.length; i++) {
-            this.squares.at(i)?.render(plane);
-        }
-    }
 }

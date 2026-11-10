@@ -1,4 +1,4 @@
-import { rgbToRgba } from "../../../../color/color.js";
+import { hsvToHex, rgbToRgba } from "../../../../color/color.js";
 
 export class Square {
     constructor(posX, posY) {
@@ -16,5 +16,10 @@ export class Square {
     render(planeManager) {
         planeManager.canvasManager.context.fillStyle = this.renderColor;
         planeManager.canvasManager.renderSquare2D(this.posX, this.posY, this.width, this.height);
+    }
+
+    renderText(planeManager, text) {
+        planeManager.canvasManager.context.fillStyle = hsvToHex(0, 0, 0);
+        planeManager.canvasManager.renderText(this.posX + .5, this.posY + .5, this.height / 2, "" + text);
     }
 }
