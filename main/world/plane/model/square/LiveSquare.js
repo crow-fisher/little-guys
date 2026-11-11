@@ -68,7 +68,7 @@ export class LiveSquare extends Square {
     }
 
     gravityPhysics(box, plane) {
-        if (this.type == 1) {
+        if (this.type >= 1) {
             return;
         }
         let nbBot = box.nbBot(plane, true);

@@ -8,6 +8,7 @@ import { LiveSquare } from "./model/square/LiveSquare.js";
 import { StaticSquare } from "./model/square/StaticSquare.js";
 import { StaticLightManager } from "./model/lighting/StaticLightManager.js";
 import { LiveLightManager } from "./model/lighting/LiveLightManager.js";
+import { LightSource } from "./model/lighting/lightSource/LightSource.js";
 
 export class PlaneManager extends RuntimeComponent {
     constructor(blockManager) {
@@ -116,7 +117,19 @@ export class PlaneManager extends RuntimeComponent {
     }
 
     liveBrush(box) {
-        box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig);
+        switch (this.mcc.live.mode) {
+            case 0:
+                box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig);
+                break;
+            case 1:
+            default:
+                box.lightSource = new LightSource(this.mcc);
+                break;
+        }
+    }
+
+    lightingBrush(box) {
+        box.squares[this.mcc.plane.active].lightSource = new LightSource(this.mcc);
     }
 
     traceLineBetweenPoints(p1, p2) {

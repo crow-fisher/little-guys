@@ -13,10 +13,11 @@ export class Box {
             this.squares.at(i)?.update(this, plane);
         }
     }
-    render(plane) {
+    render(planeManager) {
         for (let i = 0; i < this.squares.length; i++) {
-            this.squares.at(i)?.render(plane);
+            this.squares.at(i)?.render(planeManager);
         }
+        this.lightSource?.render(planeManager, this);
     }
     nbLeft(plane, create=false) {
         return plane.getBox(this.posX - 1, this.posY, create)
