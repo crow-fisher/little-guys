@@ -9,6 +9,7 @@ export class Box {
         this.lastTouched = Date.now();
     }
     update(plane) {
+        this.lightSource?.update(plane);
         for (let i = 0; i < this.squares.length; i++) {
             this.squares.at(i)?.update(this, plane);
         }
