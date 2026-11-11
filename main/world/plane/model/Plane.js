@@ -11,7 +11,7 @@ export class Plane {
     getBox(px, py, create = false) {
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
         if (create)
-            this.boxes.get(px).set(py, new Box(px, py));
+            this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box(px, py));
 
 
         return this.boxes.get(px).get(py);

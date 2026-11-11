@@ -43,10 +43,11 @@ export class LiveSquare extends Square {
         ]
         this.colorHsv = rgb2hsv(...this.colorRaw)
         this.colorHsvAdj = addVectors(this.colorHsv, [this.offsetHue, this.offsetSaturation, this.offsetValue]);
+
     }
 
     processLighting(box) {
-        this.renderColor = rgbToRgba(...multiplyVectors(hsvToRgb(...this.colorHsvAdj), box.lighting));
+        this.renderColor = rgbToRgba(...multiplyVectors(hsvToRgb(...this.colorHsvAdj), box.lighting), 1);
     }
 
     randomize() {
