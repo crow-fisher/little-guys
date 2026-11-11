@@ -3,7 +3,7 @@ export class Box {
     constructor(posX, posY) {
         this.posX = posX;
         this.posY = posY;
-        
+        this.lighting = [0, 0, 0];
         this.squares = [];
         this.lastTouched = Date.now();
     }

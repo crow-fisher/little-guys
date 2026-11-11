@@ -1,7 +1,8 @@
+
 import { rgbToRgba } from "../../../../color/color.js";
-import { hsvaToRgba, rgb2hsv } from "../../../../common.js";
+import { hsvaToRgba, hsvToRgb, rgb2hsv } from "../../../../common.js";
 import { clamp } from "../../../../util/func.js";
-import { addVectors, multiplyVectorByScalarCopy } from "../../../../util/vector.js";
+import { addVectors, multiplyVectorByScalar, multiplyVectorByScalarCopy, multiplyVectors, multiplyVectorsDest } from "../../../../util/vector.js";
 import { Square } from "./Square.js";
 
 export class LiveSquare extends Square {
@@ -15,6 +16,7 @@ export class LiveSquare extends Square {
     }
     update(box, planeManager) {
         this.gravityPhysics(box, planeManager);
+        this.processLighting(box);
     }
     render(planeManager) {
         super.render(planeManager);
@@ -41,7 +43,10 @@ export class LiveSquare extends Square {
         ]
         this.colorHsv = rgb2hsv(...this.colorRaw)
         this.colorHsvAdj = addVectors(this.colorHsv, [this.offsetHue, this.offsetSaturation, this.offsetValue]);
-        this.renderColor = rgbToRgba(...hsvaToRgba(...this.colorHsvAdj, 1, 1))
+    }
+
+    processLighting(box) {
+        this.renderColor = rgbToRgba(...multiplyVectors(hsvToRgb(...this.colorHsvAdj), box.lighting));
     }
 
     randomize() {

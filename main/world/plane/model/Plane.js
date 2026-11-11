@@ -2,25 +2,25 @@ import { Box } from "./Box.js";
 
 export class Plane {
     constructor(planeManager, lightManager) {
-        this.planeManager = planeManager; 
+        this.planeManager = planeManager;
         this.lightManager = lightManager;
         this.boxes = new Map();
         this.tickBoxes = [];
     }
 
-    getBox(px, py, create=false) {
+    getBox(px, py, create = false) {
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
         if (create)
-            this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box(px, py));
-        
+            this.boxes.get(px).set(py, new Box(px, py));
+
+
         return this.boxes.get(px).get(py);
     }
 
     update() {
         this.updateTickBoxes();
         this.updateBoxes();
-
-        this.lightManager.update(this);
+        this.lightManager.update(this.tickBoxes);
     }
 
     updateTickBoxes() {
@@ -42,6 +42,7 @@ export class Plane {
     }
 
     render() {
+        this.lightManager.render(this.tickBoxes);
         this.tickBoxes.forEach((b) => b.render(this.planeManager));
     }
 }

@@ -79,9 +79,9 @@ export function addVec3Dest(v1, v2, dest) {
 }
 
 export function addTwoVec3Dest(v1, v2, v3, dest) {
-    dest[0] = (v1[0] + v2[0] + v3[0]);
-    dest[1] = (v1[1] + v2[1] + v3[1]);
-    dest[2] = (v1[2] + v2[2] + v3[2]);
+  dest[0] = (v1[0] + v2[0] + v3[0]);
+  dest[1] = (v1[1] + v2[1] + v3[1]);
+  dest[2] = (v1[2] + v2[2] + v3[2]);
 }
 
 export function addVec3MultDest(v1, v2, m, dest) {
@@ -173,13 +173,13 @@ export function copyVecValueRound(src, dest) {
   }
 }
 
-export function multiplyVectorByScalar(vec, scalar, nm=3) {
+export function multiplyVectorByScalar(vec, scalar, nm = 3) {
   for (let i = 0; i < Math.min(vec.length, nm); i++) {
     vec[i] *= scalar;
   }
   return vec;
 }
-export function multiplyVectorByScalarCopy(vecIn, scalar, nm=3) {
+export function multiplyVectorByScalarCopy(vecIn, scalar, nm = 3) {
   let vec = structuredClone(vecIn);
   for (let i = 0; i < Math.min(vec.length, nm); i++) {
     vec[i] *= scalar;
@@ -197,10 +197,17 @@ export function multiplyVectorByScalarDestAdd(vec, scalar, dest) {
   }
 }
 
+export function multiplyVectors(v1, v2) {
+  for (let i = 0; i < v1.length; i++)
+    v1[i] *= v2[i];
+  return v1;
+}
+
 export function multiplyVectorsDest(v1, v2, dest) {
   for (let i = 0; i < v1.length; i++)
     dest[i] = v1[i] * v2[i];
 }
+
 export function multiplyVectorsMultDest(v1, v2, m, dest) {
   for (let i = 0; i < v1.length; i++)
     dest[i] = v1[i] * (m * v2[i]);

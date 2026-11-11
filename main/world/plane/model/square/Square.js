@@ -7,7 +7,7 @@ export class Square {
         this.posY = posY;
         this.width = 1;
         this.height = 1;
-        this.renderColor = "rgba(173, 25, 173, 0.5)";
+        this.renderColor = "rgba(173, 25, 173, 0.5)"; 
     }
 
     update(box, planeManager) {

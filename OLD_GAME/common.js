@@ -83,10 +83,6 @@ export function hsvToRgba(h, s, v, o) {
     return "rgba(" + f(5) + "," + f(3) + "," + f(1) + "," + o + ")";
 }
 
-export function hsvToRgb(h, s, v) {
-    let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
-    return [f(5), f(3), f(1)]
-}
 
 export function hsvaToRgba(h, s, v, a, m=256) {
     let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
