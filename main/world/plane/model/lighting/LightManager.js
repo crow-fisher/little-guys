@@ -8,7 +8,7 @@ export class LightManager {
     }
 
     render(boxes) {
-        boxes.forEach((box) => box.lighting = multiplyVectorByScalarCopy([1, 1, 1], .5 + .2 * Math.sin(Date.now() / 100)));
+        boxes.forEach((box) => box.lighting = multiplyVectorByScalarCopy([1, 1, 1], .5 + .1 * Math.sin(Date.now() / 100 + .05 * ((box.posX ** 2 + box.posY ** 2)))));
     }
 
 }
