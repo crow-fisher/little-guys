@@ -4,12 +4,15 @@ export class Box {
         this.posX = posX;
         this.posY = posY;
         this.lightSource = null;
+        this.lightingSource = [];
         this.lighting = [0, 0, 0];
         this.squares = [];
         this.lastTouched = Date.now();
-    }
+        this._lightingSourcePrev = [];
+        this._lightingSourceDelt = [];        
+                                         }
     update(plane) {
-        this.lightSource?.update(plane);
+        this.lightSource?.update(plane, this);
         for (let i = 0; i < this.squares.length; i++) {
             this.squares.at(i)?.update(this, plane);
         }

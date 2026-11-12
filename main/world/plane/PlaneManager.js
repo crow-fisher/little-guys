@@ -17,7 +17,7 @@ export class PlaneManager extends RuntimeComponent {
         this.staticPlanes = [];
         this.livePlanes = [];
         this.planes = [null, this.staticPlanes, this.livePlanes]
-        this.lightingManagers = [null, this.staticLightManager, this.liveLightManager]
+        this.lightingManagers = [null, this.staticLightManager, this.liveLightManager];
     }
 
     di(mainManager) {
@@ -30,6 +30,8 @@ export class PlaneManager extends RuntimeComponent {
     }
 
     postConstruct() {
+        this.lightSourceId = 0;
+
         this.clickTime = 0;
         this.clickPoints = [];
         this.clickIdx = -1;
@@ -123,7 +125,7 @@ export class PlaneManager extends RuntimeComponent {
                 break;
             case 1:
             default:
-                box.lightSource = new LightSource(this.mcc);
+                box.lightSource = box.lightSource ?? new LightSource(this.lightSourceId++, this.mcc);
                 break;
         }
     }
@@ -144,6 +146,10 @@ export class PlaneManager extends RuntimeComponent {
 
     doBrushAtPoint(px, py) {
         this._s = this.mcc.brush.brushSize;
+        
+        if (this.mcc.live.mode == 1) {
+           this._s /= 3; 
+        }
 
         let cx = this.cameraManager.windowWidthStart + (px / this.cameraManager.totalWidth) * this.cameraManager.windowWidth;
         let cy = this.cameraManager.windowHeightStart + (py / this.cameraManager.totalHeight) * this.cameraManager.windowHeight;
