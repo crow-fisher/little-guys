@@ -26,6 +26,9 @@ export class Plane {
         this.updateBoxes();
         // now here, newBoxes and newLightSources are both valid and filled with our new of each of them
         this.lightManager.update(this.tickBoxes);
+
+        this.newBoxes.clear();
+        this.newLightSources.clear();
     }
 
     updateTickBoxes() {
