@@ -11,7 +11,7 @@ export class LightSource {
     }
 
     calculateLighting(box, tickBox, dest) {
-        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1)), dest)
+        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * Math.max(16, getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1))), dest)
     }
 
     destroy(plane) {
