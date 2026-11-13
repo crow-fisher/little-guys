@@ -13,6 +13,13 @@ export class LightSource {
         return multiplyVectorByScalarCopy(this.color, this.color[3] / (30 * getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1)))
     }
 
+    addBox(box, tickBox) {
+        tickBox.lightingSource[this.id] = tickBox.lightingSource[this.id] ?? [0, 0, 0]; 
+        tickBox._lightingSourcePrev[this.id] = tickBox._lightingSourcePrev[this.id] ?? [0, 0, 0];
+        tickBox._lightingSourceDelt[this.id] = tickBox._lightingSourceDelt[this.id] ?? [0, 0, 0]; 
+        tickBox.lightingSource[this.id] = this.calculateLighting(box, tickBox);
+    }
+
     update(plane, box) {
         if (Math.random() < .95)
             return;

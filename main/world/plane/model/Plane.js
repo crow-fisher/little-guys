@@ -6,20 +6,25 @@ export class Plane {
         this.lightManager = lightManager;
         this.boxes = new Map();
         this.tickBoxes = [];
+        
+        this.newBoxes = new Set();
+        this.newLightSources = new Set();
     }
 
     getBox(px, py, create = false) {
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
-        if (create)
-            this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box(px, py));
-
-
+        if (create && this.boxes.get(px).get(py) == null) {
+            let newBox = new Box(px, py);
+            this.boxes.get(px).set(py, newBox);
+            this.newBoxes.add(newBox);
+        }
         return this.boxes.get(px).get(py);
     }
 
     update() {
         this.updateTickBoxes();
         this.updateBoxes();
+        // now here, newBoxes and newLightSources are both valid and filled with our new of each of them
         this.lightManager.update(this.tickBoxes);
     }
 
