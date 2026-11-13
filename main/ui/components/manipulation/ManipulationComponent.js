@@ -84,8 +84,8 @@ export class ManipulationComponent extends Component {
         lightCC.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         lightCC.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
         lightCC.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
-        lightCC.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (a) => this.setOpacity(clamp(a)),
-            -.1, 1.1, 150, 0.2));
+        lightCC.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (a) => this.setOpacity(a),
+            -1, 1, 150, 0.2));
 
     }
 

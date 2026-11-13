@@ -43,7 +43,7 @@ export class PlaneManager extends RuntimeComponent {
         this.clickRoutine();
         this.staticPlanes.forEach((plane) => plane.update());
         this.livePlanes.forEach((plane) => plane.update());
-}
+    }
 
     render() {
         this.staticPlanes.forEach((plane) => plane.render());
@@ -125,8 +125,15 @@ export class PlaneManager extends RuntimeComponent {
                 break;
             case 1:
             default:
-                if (box.lightSource == null) {
-                    box.lightSource = new LightSource(this.lightSourceId++, this.mcc);
+                if (this.mouseManager.isButtonPressed(2)) {
+                    if (box.lightSource != null) {
+                        box.lightSource.destroy(this.activePlane());
+                        box.lightSource = null;
+                    }
+                } else {
+                    if (box.lightSource == null) {
+                        box.lightSource = new LightSource(this.lightSourceId++, this.mcc);
+                    }
                 }
                 break;
         }
@@ -148,9 +155,9 @@ export class PlaneManager extends RuntimeComponent {
 
     doBrushAtPoint(px, py) {
         this._s = this.mcc.brush.brushSize;
-        
+
         if (this.mcc.live.mode == 1) {
-           this._s = 0.1;
+            this._s = 0.1;
         }
 
         let cx = this.cameraManager.windowWidthStart + (px / this.cameraManager.totalWidth) * this.cameraManager.windowWidth;

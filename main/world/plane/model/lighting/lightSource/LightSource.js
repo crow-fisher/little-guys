@@ -1,12 +1,12 @@
 import { rgbToRgba } from "../../../../../color/color.js";
 import { getDist } from "../../../../../common.js";
-import { addVectors, copyVecValue, multiplyVectorByScalarCopy, multiplyVectorByScalarDest, subtractVectorsDest } from "../../../../../util/vector.js";
+import { addVectors, copyVecValue, multiplyVectorByScalarCopy, multiplyVectorByScalarDest, subtractVectors, subtractVectorsDest } from "../../../../../util/vector.js";
 
 export class LightSource {
     constructor(id, config) {
         this.id = id;
         this.color = structuredClone(config.colorConfig.rgbaArr);
-        this.renderColor = rgbToRgba(...this.color);
+        this.renderColor = rgbToRgba(...this.color, 0.1);
         this.init = 0;
     }
 
@@ -14,11 +14,13 @@ export class LightSource {
         return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1)), dest)
     }
 
-    update(plane, box) {
-        if (plane.planeManager.inputManager.mouseManager.isButtonPressed(0)) {
-            return;
-        }
+    destroy(plane) {
+        plane.tickBoxes.forEach((tickBox) => {
+            subtractVectors(tickBox.lighting, tickBox.lightingSource[this.id])
+        });
+    }
 
+    update(plane, box) {
         let targetIter;
         if (this.init) {
             targetIter = plane.newBoxes;

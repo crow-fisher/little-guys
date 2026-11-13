@@ -1,4 +1,7 @@
 // credit: https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript
+
+import { clamp } from "../util/func.js";
+
 // input: r,g,b in [0,1], out: h in [0,360) and s,v in [0,1]
 export function rgb2hsv(r, g, b) {
     let v = Math.max(r, g, b), c = v - Math.min(r, g, b);
@@ -15,8 +18,14 @@ export function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
-export function rgbToRgba(r, g, b, a=1) {
-    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+export function rgbToRgba(r, g, b, a=1, am=1) {
+    if (a < 0) {
+        r = 255 - r;
+        g = 255 - g;
+        b = 255 - b;
+        return "rgba(" + clamp(r, 0, 255) + "," + clamp(g, 0, 255) + "," + clamp(b, 0, 255) + "," + clamp(-a * am) + ")";
+    }
+    return "rgba(" + clamp(r, 0, 255) + "," + clamp(g, 0, 255) + "," + clamp(b, 0, 255) + "," + clamp(a * am) + ")";
 }
 
 export function hsvToHex(h, s, v) {
