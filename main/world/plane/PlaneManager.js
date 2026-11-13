@@ -150,7 +150,7 @@ export class PlaneManager extends RuntimeComponent {
         this._s = this.mcc.brush.brushSize;
         
         if (this.mcc.live.mode == 1) {
-           this._s /= 3; 
+           this._s = 0.1;
         }
 
         let cx = this.cameraManager.windowWidthStart + (px / this.cameraManager.totalWidth) * this.cameraManager.windowWidth;
