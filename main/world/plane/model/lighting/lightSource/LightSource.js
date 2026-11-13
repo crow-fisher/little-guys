@@ -42,7 +42,9 @@ export class LightSource {
     }
 
     render(planeManager, box) {
-        planeManager.canvasManager.context.fillStyle = this.renderColor;
-        planeManager.canvasManager.renderSquare2D(box.posX, box.posY, 1, 1);
+        if ((planeManager.mcc.live.visibilityMask & 2) == 2) {
+            planeManager.canvasManager.context.fillStyle = this.renderColor;
+            planeManager.canvasManager.renderSquare2D(box.posX, box.posY, 1, 1);
+        }
     }
 }

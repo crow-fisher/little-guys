@@ -19,6 +19,7 @@ export class LiveSquare extends Square {
         this.processLighting(box);
     }
     render(planeManager) {
+        if (planeManager.mcc.live.visibilityMask & 1 == 1)
         super.render(planeManager);
     }
 

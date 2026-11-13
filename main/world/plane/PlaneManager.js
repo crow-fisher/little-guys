@@ -156,7 +156,7 @@ export class PlaneManager extends RuntimeComponent {
     doBrushAtPoint(px, py) {
         this._s = this.mcc.brush.brushSize;
 
-        if (this.mcc.live.mode == 1) {
+        if (this.mcc.plane.active == 1 & this.mcc.live.mode == 1) {
             this._s = 0.1;
         }
 

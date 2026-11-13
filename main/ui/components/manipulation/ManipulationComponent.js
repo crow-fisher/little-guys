@@ -24,7 +24,7 @@ export class ManipulationComponent extends Component {
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushSize, (v) => this.gcoBrush().brushSize = v,
-            0, 120, 150, 0.2));
+            0, 25, 150, 0.2));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush strength"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushStrength, (v) => this.gcoBrush().brushStrength = v,
@@ -70,6 +70,15 @@ export class ManipulationComponent extends Component {
             () => this.gcoLive().materialConfig.type == 1, (v) => this.gcoLive().materialConfig.type = 1,
             "rock", () => "#5c5752", () => "#d3c7bb"));
 
+        let rowVisibilityMask = new Container(0);
+        this.liveCC.addElement(rowVisibilityMask);
+        rowVisibilityMask.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+            () => (this.gcoLive().visibilityMask & 1) == 1, (c, v=this.gcoLive().visibilityMask) => this.gcoLive().visibilityMask = (!c ? v & ~1 : v | 1),
+            "world", () => "#744b22", () => "#9b6630"));
+
+        rowVisibilityMask.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+            () => (this.gcoLive().visibilityMask & 2) == 2, (c, v=this.gcoLive().visibilityMask) => this.gcoLive().visibilityMask = (!c ? v & ~2 : v | 2),
+            "light", () => "#5c5752", () => "#d3c7bb"));
 
         this.liveCC.addElement(new Toggle(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER,
             () => this.gcoLive().mode == 1, (v) => this.gcoLive().mode = 1,
@@ -116,49 +125,50 @@ export class ManipulationComponent extends Component {
 
     getDefaultConfig() {
         return {
-    "colorConfig": {
-        "h": 0,
-        "s": 0.5,
-        "v": 0.5,
-        "a": 1,
-        "colorHistory": [],
-        "rgbaArr": [
-            127,
-            127,
-            127,
-            1
-        ]
-    },
-    "brush": {
-        "brushSize": 20,
-        "brushStrength": -20
-    },
-    "static": {},
-    "live": {
-        "mode": 0,
-        "lightConfig": {},
-        "materialConfig": {
-            "type": 1,
-            "sand": 0.33,
-            "silt": 0.33,
-            "clay": 0.34,
-            "offsetHue": 0,
-            "offsetSaturation": 0,
-            "offsetValue": 0
+            "colorConfig": {
+                "h": 0,
+                "s": 0.5,
+                "v": 0.5,
+                "a": 1,
+                "colorHistory": [],
+                "rgbaArr": [
+                    127,
+                    127,
+                    127,
+                    1
+                ]
+            },
+            "brush": {
+                "brushSize": 20,
+                "brushStrength": -20
+            },
+            "static": {},
+            "live": {
+                "mode": 0,
+                "visibilityMask": 3,
+                "lightConfig": {},
+                "materialConfig": {
+                    "type": 1,
+                    "sand": 0.33,
+                    "silt": 0.33,
+                    "clay": 0.34,
+                    "offsetHue": 0,
+                    "offsetSaturation": 0,
+                    "offsetValue": 0
+                }
+            },
+            "plane": {
+                "active": 1,
+                "staticIdx": 0,
+                "liveIdx": 0
+            },
+            "default": {},
+            "offsetScale": {
+                "offsetX": 32,
+                "offsetY": 48,
+                "sizeX": 385,
+                "sizeY": 694
+            }
         }
-    },
-    "plane": {
-        "active": 1,
-        "staticIdx": 0,
-        "liveIdx": 0
-    },
-    "default": {},
-    "offsetScale": {
-        "offsetX": 32,
-        "offsetY": 48,
-        "sizeX": 385,
-        "sizeY": 694
-    }
-}
     }
 }
