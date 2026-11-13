@@ -1,9 +1,8 @@
 import { Box } from "./Box.js";
 
 export class Plane {
-    constructor(planeManager, lightManager) {
+    constructor(planeManager) {
         this.planeManager = planeManager;
-        this.lightManager = lightManager;
         this.boxes = new Map();
         this.tickBoxes = [];
         this.newBoxes = new Set();
@@ -22,9 +21,6 @@ export class Plane {
     update() {
         this.updateTickBoxes();
         this.updateBoxes();
-        // now here, newBoxes and newLightSources are both valid and filled with our new of each of them
-        this.lightManager.update(this.tickBoxes);
-
         this.newBoxes.clear();
     }
 
@@ -47,7 +43,6 @@ export class Plane {
     }
 
     render() {
-        this.lightManager.render(this.tickBoxes);
         this.tickBoxes.forEach((b) => b.render(this.planeManager));
     }
 }

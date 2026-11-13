@@ -2,12 +2,9 @@ import { processRangeToOne } from "../../common.js";
 import { RuntimeComponent } from "../../runtimeComponent.js";
 import { clamp } from "../../util/func.js";
 import { addVec4Mult, multiplyVectorByScalar } from "../../util/vector.js";
-import { Square } from "./model/square/Square.js";
 import { Plane } from "./model/Plane.js";
 import { LiveSquare } from "./model/square/LiveSquare.js";
 import { StaticSquare } from "./model/square/StaticSquare.js";
-import { StaticLightManager } from "./model/lighting/StaticLightManager.js";
-import { LiveLightManager } from "./model/lighting/LiveLightManager.js";
 import { LightSource } from "./model/lighting/lightSource/LightSource.js";
 
 export class PlaneManager extends RuntimeComponent {
@@ -73,11 +70,11 @@ export class PlaneManager extends RuntimeComponent {
 
     activePlane() {
         if (this.mcc.plane.active == 0) {
-            this.staticPlanes[this.mcc.plane.staticIdx] = this.staticPlanes[this.mcc.plane.staticIdx] ?? new Plane(this, new StaticLightManager(this));
+            this.staticPlanes[this.mcc.plane.staticIdx] = this.staticPlanes[this.mcc.plane.staticIdx] ?? new Plane(this);
             return this.staticPlanes[this.mcc.plane.staticIdx];
         }
         if (this.mcc.plane.active == 1) {
-            this.livePlanes[this.mcc.plane.liveIdx] = this.livePlanes[this.mcc.plane.liveIdx] ?? new Plane(this, new LiveLightManager(this));
+            this.livePlanes[this.mcc.plane.liveIdx] = this.livePlanes[this.mcc.plane.liveIdx] ?? new Plane(this);
             return this.livePlanes[this.mcc.plane.liveIdx];
         }
     }
