@@ -53,7 +53,7 @@ export class UIManager extends RuntimeComponent {
     }
 
     getColorInactive(b=1) {
-        return hsvToHex(41, .29, .29 * b);
+        return hsvToHex(24, .29, .29 * b);
     }
 
     getBaseUISize() {

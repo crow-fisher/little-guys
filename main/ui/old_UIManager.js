@@ -44,7 +44,7 @@ export class UIManager extends RuntimeComponent {
     /*
     "base" colors 
         "hsl(36, 81%, 37%)" active
-        "hsl(41, 29%, 29%)" inactive
+        "hsl(51, 52%, 38%)" inactive
 
     */
 

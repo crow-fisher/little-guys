@@ -51,6 +51,9 @@ export class PlaneManager extends RuntimeComponent {
     }
 
     clickRoutine() {
+        if (this.uiManager.frameLastTouched) {
+            return;
+        }
         if (this.mouseManager.isButtonPressed(0) || this.mouseManager.isButtonPressed(2)) {
             if (this.clickTime != this.mouseManager.time) {
                 this.clickTime = this.mouseManager.time;
