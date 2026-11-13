@@ -6,9 +6,7 @@ export class Plane {
         this.lightManager = lightManager;
         this.boxes = new Map();
         this.tickBoxes = [];
-        
         this.newBoxes = new Set();
-        this.newLightSources = new Set();
     }
 
     getBox(px, py, create = false) {
@@ -28,7 +26,6 @@ export class Plane {
         this.lightManager.update(this.tickBoxes);
 
         this.newBoxes.clear();
-        this.newLightSources.clear();
     }
 
     updateTickBoxes() {

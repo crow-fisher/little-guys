@@ -126,9 +126,7 @@ export class PlaneManager extends RuntimeComponent {
             case 1:
             default:
                 if (box.lightSource == null) {
-                    let ls = new LightSource(this.lightSourceId++, this.mcc);
-                    this.activePlane().newLightSources.add(ls);
-                    box.lightSource = ls;
+                    box.lightSource = new LightSource(this.lightSourceId++, this.mcc);
                 }
                 break;
         }

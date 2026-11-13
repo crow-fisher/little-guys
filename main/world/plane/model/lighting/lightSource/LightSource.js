@@ -1,31 +1,41 @@
 import { rgbToRgba } from "../../../../../color/color.js";
 import { getDist } from "../../../../../common.js";
-import { addVectors, copyVecValue, multiplyVectorByScalarCopy, subtractVectorsDest } from "../../../../../util/vector.js";
+import { addVectors, copyVecValue, multiplyVectorByScalarCopy, multiplyVectorByScalarDest, subtractVectorsDest } from "../../../../../util/vector.js";
 
 export class LightSource {
     constructor(id, config) {
         this.id = id;
         this.color = structuredClone(config.colorConfig.rgbaArr);
         this.renderColor = rgbToRgba(...this.color);
+        this.init = 0;
     }
 
-    calculateLighting(box, tickBox) {
-        return multiplyVectorByScalarCopy(this.color, this.color[3] / (30 * getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1)))
+    calculateLighting(box, tickBox, dest) {
+        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1)), dest)
     }
 
     update(plane, box) {
-        if (Math.random() < .95)
+        if (plane.planeManager.inputManager.mouseManager.isButtonPressed(0)) {
             return;
+        }
 
-        plane.newBoxes.forEach((newBox) => {
-            newBox.lightingSource[this.id] = newBox.lightingSource[this.id] ?? [0, 0, 0]; 
-            newBox._lightingSourcePrev[this.id] = newBox._lightingSourcePrev[this.id] ?? [0, 0, 0];
-            newBox._lightingSourceDelt[this.id] = newBox._lightingSourceDelt[this.id] ?? [0, 0, 0]; 
-            newBox.lightingSource[this.id] = this.calculateLighting(box, newBox);
+        let targetIter;
+        if (this.init) {
+            targetIter = plane.newBoxes;
+        } else {
+            targetIter = plane.tickBoxes;
+            this.init = 1;
+        }
 
-            subtractVectorsDest(newBox.lightingSource[this.id], newBox._lightingSourcePrev[this.id], newBox._lightingSourceDelt[this.id]);
-            copyVecValue(newBox.lightingSource[this.id], newBox._lightingSourcePrev[this.id]);
-            addVectors(newBox.lighting, newBox._lightingSourceDelt[this.id])
+        targetIter.forEach((tickBox) => {
+            tickBox.lightingSource[this.id] = tickBox.lightingSource[this.id] ?? [0, 0, 0];
+            tickBox._lightingSourcePrev[this.id] = tickBox._lightingSourcePrev[this.id] ?? [0, 0, 0];
+            tickBox._lightingSourceDelt[this.id] = tickBox._lightingSourceDelt[this.id] ?? [0, 0, 0];
+            this.calculateLighting(box, tickBox, tickBox.lightingSource[this.id]);
+
+            subtractVectorsDest(tickBox.lightingSource[this.id], tickBox._lightingSourcePrev[this.id], tickBox._lightingSourceDelt[this.id]);
+            copyVecValue(tickBox.lightingSource[this.id], tickBox._lightingSourcePrev[this.id]);
+            addVectors(tickBox.lighting, tickBox._lightingSourceDelt[this.id])
         });
     }
 
