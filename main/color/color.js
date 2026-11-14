@@ -20,10 +20,13 @@ export function rgbToHex(r, g, b) {
 
 export function rgbToRgba(r, g, b, a=1, am=1) {
     if (a < 0) {
-        r = 255 - r;
-        g = 255 - g;
-        b = 255 - b;
-        return "rgba(" + clamp(r, 0, 255) + "," + clamp(g, 0, 255) + "," + clamp(b, 0, 255) + "," + clamp(-a * am) + ")";
+        let hsv = rgb2hsv(clamp(r / 255), clamp(g / 255), clamp(b / 255));
+        hsv[0] += 180;
+        let rgbP = hsv2rgb(...hsv);
+        r = rgbP[0] * 255;
+        g = rgbP[1] * 255;
+        b = rgbP[2] * 255;
+        return "rgba(" + r + "," + g + "," + b + "," + clamp(-a * am) + ")";
     }
     return "rgba(" + clamp(r, 0, 255) + "," + clamp(g, 0, 255) + "," + clamp(b, 0, 255) + "," + clamp(a * am) + ")";
 }

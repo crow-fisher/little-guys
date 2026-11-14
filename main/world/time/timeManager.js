@@ -10,8 +10,8 @@ export class TimeManager extends RuntimeComponent {
         super();
         this.curDay = 100.2;
         this.curDate = Date.now();
-        this.dt = 0;
         this.dDay = 0;
+        this.dt = 0;
         this.dtRolling = 0;
         this.curTimeScale = 1;
         this.daylightStrength = 0;

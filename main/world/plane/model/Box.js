@@ -12,6 +12,7 @@ export class Box {
         this._lightingSourceDelt = [];        
                                          }
     update(plane) {
+        this._ltt = plane.planeManager.mainManager.timeManager.curDate;
         this.lightSource?.update(plane, this);
         for (let i = 0; i < this.squares.length; i++) {
             this.squares.at(i)?.update(this, plane);

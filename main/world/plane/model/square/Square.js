@@ -10,6 +10,10 @@ export class Square {
         this.renderColor = "rgba(173, 25, 173, 0.5)"; 
     }
 
+    destroy() {
+        Object.keys(this).forEach((key) => this[key] = null);
+    }
+
     update(box, planeManager) {
     }
     

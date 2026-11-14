@@ -167,7 +167,7 @@ export class ManipulationComponent extends Component {
                 "offsetX": 32,
                 "offsetY": 48,
                 "sizeX": 385,
-                "sizeY": 694
+                "sizeY": 750
             }
         }
     }

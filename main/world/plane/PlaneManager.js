@@ -6,6 +6,7 @@ import { Plane } from "./model/Plane.js";
 import { LiveSquare } from "./model/square/LiveSquare.js";
 import { StaticSquare } from "./model/square/StaticSquare.js";
 import { LightSource } from "./model/lighting/lightSource/LightSource.js";
+import { StaticLightSource } from "./model/lighting/lightSource/StaticLightSource.js";
 
 export class PlaneManager extends RuntimeComponent {
     constructor(blockManager) {
@@ -121,7 +122,12 @@ export class PlaneManager extends RuntimeComponent {
     liveBrush(box) {
         switch (this.mcc.live.mode) {
             case 0:
-                box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig);
+                if (this.mouseManager.isButtonPressed(2)) {
+                    box.squares[this.mcc.plane.active]?.destroy();
+                    box.squares[this.mcc.plane.active] = null;
+                } else {
+                    box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig);
+                }
                 break;
             case 1:
             default:
@@ -132,7 +138,7 @@ export class PlaneManager extends RuntimeComponent {
                     }
                 } else {
                     if (box.lightSource == null) {
-                        box.lightSource = new LightSource(this.lightSourceId++, this.mcc);
+                        box.lightSource = new StaticLightSource(this.lightSourceId++, this.mcc);
                     }
                 }
                 break;

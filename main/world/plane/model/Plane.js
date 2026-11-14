@@ -11,11 +11,16 @@ export class Plane {
     getBox(px, py, create = false) {
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
         if (create && this.boxes.get(px).get(py) == null) {
-            let newBox = new Box(px, py);
-            this.boxes.get(px).set(py, newBox);
-            this.newBoxes.add(newBox);
+            this._b = new Box(px, py);
+            this.boxes.get(px).set(py, this._b);
+            this.newBoxes.add(this._b);
+        } else {
+            this._b = this.boxes.get(px).get(py);
+            if (this._b && this.planeManager.mainManager.timeManager.curDay - this._b._ltt > this.planeManager.mainManager.timeManager.dt) {
+                this.newBoxes.add(this._b);
+            }
         }
-        return this.boxes.get(px).get(py);
+        return this._b
     }
 
     update() {
@@ -30,7 +35,7 @@ export class Plane {
             if (this.boxes.get(i) == null)
                 continue;
             for (let j = this.planeManager.cameraManager.windowHeightEnd; j >= this.planeManager.cameraManager.windowHeightStart; j--) {
-                let b = this.boxes.get(i)?.get(j);
+                let b = this.getBox(i, j);
                 if (b) {
                     this.tickBoxes.push(b);
                 }
