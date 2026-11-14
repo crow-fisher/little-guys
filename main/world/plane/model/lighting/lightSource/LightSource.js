@@ -16,7 +16,6 @@ export class LightSource {
 
     destroy(plane) {
         plane.tickBoxes.forEach((tickBox) => {
-            subtractVectors(tickBox.lighting, tickBox.lightingSource[this.id]);
             tickBox.lightingSource[this.id] = null;
             tickBox._lightingSourcePrev[this.id] = null;
             tickBox._lightingSourceDelt[this.id] = null;
