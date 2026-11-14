@@ -18,7 +18,7 @@ export class CameraManager extends RuntimeComponent {
         this.camera2ControlManagers = [
             new MouseCamera2ControlManager(this),
         ]
-        
+
         this.camera2ViewportCenter = [0, 0];
         this.camera2Zoom = 12;
 
@@ -30,7 +30,7 @@ export class CameraManager extends RuntimeComponent {
         this.windowHeightStart = 0;
         this.windowWidthEnd = 0;
         this.windowHeightEnd = 0;
-        
+
         this.camera3Offset = [0, 0, 0];
         this.camera3OffsetDt = [0, 0, 0];
         this.camera3Movement = [0, 0, 0];
@@ -39,7 +39,7 @@ export class CameraManager extends RuntimeComponent {
         this.camera3Fov = 80;
 
         this.rotNorm = [0, 0, 0];
-        
+
         this.right = [0, 0, 0];
         this.up = [0, 0, 0];
         this.forward = [0, 0, 0];
@@ -63,7 +63,7 @@ export class CameraManager extends RuntimeComponent {
         this.frame = 0;
         this.setFramePerspectiveMatrix();
     }
-    
+
     di(mainManager) {
         this.mainManager = mainManager;
         this.canvasManager = this.mainManager.canvasManager;
@@ -104,14 +104,20 @@ export class CameraManager extends RuntimeComponent {
     update() {
         this.camera2ControlManagers.forEach((cm) => cm.process())
         this.camera3ControlManagers.forEach((cm) => cm.process())
-        
+
         this.canvasTick2D();
-        
+
         this.movementTick();
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();
         this.setFramePerspectiveMatrix();
         this.frame += 1;
+
+        if (this.mouseManager.isButtonPressed(1)) {
+            this.camera3Offset = [0, 0, 0];
+            this.camera3OffsetDt = [0, 0, 0];
+            this.camera3Movement = [0, 0, 0];
+        }
     }
 
     movementTick() {
@@ -136,7 +142,7 @@ export class CameraManager extends RuntimeComponent {
         this.canvasManager.context.arc(p[0], p[1], 8, 0, 2 * Math.PI, false);
         this.canvasManager.context.fill();
     }
-    
+
     renderDebugPoints() {
         let max = 300;
         let step = 10;
@@ -154,7 +160,7 @@ export class CameraManager extends RuntimeComponent {
                 }
             }
         }
-        
+
         let renderedPoints = 0;
 
         points.forEach((p) => {
@@ -192,7 +198,7 @@ export class CameraManager extends RuntimeComponent {
         copyVecValue(this.right, this.camera3ToWorld[0]);
         copyVecValue(this.up, this.camera3ToWorld[1]);
         copyVecValue(this.forward, this.camera3ToWorld[2]);
-        
+
         transposeMat3Inplace(this.camera3ToWorld, this.worldToCamera);
     }
 

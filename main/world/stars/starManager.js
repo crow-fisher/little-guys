@@ -3,6 +3,7 @@ import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { renderLine } from "../../rendering/renderFunctions.js";
 import { RuntimeComponent } from "../../runtimeComponent.js";
 import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS, UI_TOPBAR_AA } from "../../ui/UIData.js";
+import { clamp } from "../../util/func.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
@@ -246,7 +247,7 @@ export class StarManager extends RuntimeComponent {
     }
 
     renderConstellations() {
-        if (loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS) == 0) {
+        if (this.astronomyAtlasComponent.gcoStyle().constellationLineWidth <= 0) {
             return;
         }
 
@@ -272,7 +273,7 @@ export class StarManager extends RuntimeComponent {
                     this.canvasManager.context,
                     fromStar.cs.renderScreen,
                     toStar.cs.renderScreen,
-                    1 + loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
+                    this.astronomyAtlasComponent.gcoStyle().constellationLineWidth,
                     fromStar.renderColor
                 );
             }

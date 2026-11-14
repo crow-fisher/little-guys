@@ -52,9 +52,6 @@ export class MouseManager extends RuntimeComponent {
         if (this.canvasManager.pointerLock) {
             this.movement.x += e.movementX / 35000
             this.movement.y += e.movementY / 35000
-
-            this.offset.x = this.canvasManager.canvas.width / 2;
-            this.offset.y = this.canvasManager.canvas.height / 2;
         }
     }
 

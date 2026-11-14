@@ -32,7 +32,5 @@ export class KeyboardCamera3ControlManager extends CameraControlManager {
         if (this.cameraManager.isKeyPressed("w")) {
             this.cameraManager.camera3OffsetDt[2] -= this.rate;
         }
-        this.cameraManager.camera3OffsetDt[0] -= this.cameraManager.getFrameMouseMove().x / 1;
-        this.cameraManager.camera3OffsetDt[1] -= this.cameraManager.getFrameMouseMove().y / 1;
     }
 }

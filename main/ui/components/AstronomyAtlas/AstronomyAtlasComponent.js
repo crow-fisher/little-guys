@@ -8,8 +8,13 @@ import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
-        return {"offsetScale":{"offsetX":347,"offsetY":88,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.2017353579175705,"opacityPosY":0.4630541871921182,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":3.2537960954446854,"minLuminance":2.2212581344902387,"maxLuminance":-1.8872017353579178,"distPowerMult":1.131236442516269},"select":{}}
+        return {"offsetScale":{"offsetX":24,"offsetY":70,"sizeX":475,"sizeY":561},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.2017353579175705,"opacityPosY":0.4630541871921182,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":3.2537960954446854,"minLuminance":2.2212581344902387,"maxLuminance":-1.8872017353579178,"distPowerMult":1.131236442516269,"constellationLineWidth":0.9568329718004339},"select":{}}
     }
+
+    gcoStyle() {
+        return this.config().style;
+    }
+
     // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
         return this.config().style.brightnessPosX;
@@ -98,7 +103,7 @@ export class AstronomyAtlasComponent extends Component {
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))
-        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (8 + 2 * this.ggvdH1() + 16 * this.ggvdH3()), this));
+        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.ggvdH1() * 4, this));
 
         let row = new Container(window, 0);
         this.container.addElement(row);
@@ -138,7 +143,13 @@ export class AstronomyAtlasComponent extends Component {
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "dist power mult"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvDistPowerMult(), (v) => this.scvDistPowerMult(v),
             1.1, 2, 180, 0.2, false));
-        // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
+        
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "constellation line"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoStyle().constellationLineWidth, (v) => this.gcoStyle().constellationLineWidth = v,
+            -.1, 2, 180, 0.2, false));
+        
+    
+            // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
         // this.container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
 
