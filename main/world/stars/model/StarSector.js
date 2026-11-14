@@ -122,6 +122,9 @@ export class StarSector {
             this._init = true;
             this.renderPrepare();
         }
+
+        this.setFOVCameraPoint();
+
         if (this.prevStarsRendered > 0 || this.fovCs.isVisibleOnScreen()) {
             this.prevStarsRendered = this.curStarsRendered;
             this.curStarsRendered = this.renderStars(
@@ -212,7 +215,6 @@ export class StarSector {
         this.rootCs.process();
 
         this.setBrightnessCameraPoint();
-        this.setFOVCameraPoint();
         this.centerCs.process();
         this.cornerCs.process();
 

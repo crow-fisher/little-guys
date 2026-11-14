@@ -13,6 +13,7 @@ export function renderPointLabel(context, x, y, z, size, color, label) {
     }
     context.beginPath();
     context.fillStyle = color;
+    size = 1;
     context.arc(x, y, size, 0, 2 * Math.PI, false);
     context.fill();
 

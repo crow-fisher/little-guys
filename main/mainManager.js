@@ -49,7 +49,8 @@ export class MainManager {
 
     frameRuntime() {
         this.frame();
-        setTimeout(() => this.frameRuntime(), 0);
+        requestAnimationFrame(() => this.frameRuntime());
+        // setTimeout(() => this.frameRuntime(), 0);
     }
 
     frame() {
