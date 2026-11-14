@@ -315,25 +315,6 @@ export class StarSector {
         return ret;
     }
 
-    prepareBucket(bucket) {
-        bucket.forEach((star) => star.process());
-    }
-
-    renderBucket(bucket, luminenceParams, renderMode) {
-        bucket.forEach((star) => {
-            if (renderMode && star._rac_val == null) {
-                return;
-            }
-            if (star._renderScreen[2] < 0 && star._relLumensRange > 0) {
-                if (star._renderScreen[0] > 0 && star._renderScreen[0] < cw && star._renderScreen[1] > 0 && star._renderScreen[1] < ch) {
-                    star.render();
-                }
-            }
-        });
-    }
-
-
-
     loadStar(star) {
         this.loadedStars.push(star);
         star.sector = this;
@@ -343,7 +324,7 @@ export class StarSector {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
 
-        let lumenBucketSize = 0.00004;
+        let lumenBucketSize = 0.004;
 
         this.buckets = new Array();
         this.bucketLumensCutoffs = new Array();
