@@ -8,7 +8,7 @@ export class StellariumCatalog extends CatalogHandlerBase {
     }
 
     loadData() {
-        fetch("./main/climate/stars/catalogSource/stellarium/constellations.fab").then((resp) => resp.text())
+        fetch("./main/world/stars/catalogSource/stellarium/constellations.fab").then((resp) => resp.text())
             .then((text) => this.loadConstellations(text))
 
         // fetch("./main/climate/stars/catalogSource/stellarium/constelation_names_eng.fab").then((resp) => resp.text())

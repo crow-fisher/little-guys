@@ -39,6 +39,7 @@ export class StarManager extends RuntimeComponent {
         super.di(mainManager); 
         this.uiManager = this.mainManager.uiManager;
         this.cameraManager = this.mainManager.cameraManager;
+        this.canvasManager = this.mainManager.canvasManager;
         this.astronomyAtlasComponent = this.uiManager.astronomyAtlasComponent;
     }
 
@@ -204,12 +205,12 @@ export class StarManager extends RuntimeComponent {
     loadData() {
 
         let hipCatalog = new HipparcosCatalog(this, (star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
-        // let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
+        let stelCatalog = new StellariumCatalog(this, (star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
         // let pastelCatalog = new PastelCatalog
         hipCatalog.loadData(() => {
             this.processDataStar();
             // pastelCatalog.loadData(() => this.processStarStatistics());
-            // stelCatalog.loadData()
+            stelCatalog.loadData()
         })
     };
 
@@ -258,18 +259,21 @@ export class StarManager extends RuntimeComponent {
                 let fromStar = this.stars.get(from);
                 let toStar = this.stars.get(to);
 
-                if (fromStar?._renderScreen == null || toStar?._renderScreen == null) {
+                fromStar?.process();
+                toStar?.process();
+
+                if (fromStar?.cs.renderScreen == null || toStar?.cs.renderScreen == null) {
                     return;
                 }
-                if (fromStar._screen[2] < 0 || toStar._screen[2] < 0) {
+                if (fromStar.cs.screen[2] < 0 || toStar.cs.screen[2] < 0) {
                     return;
                 }
                 renderLine(
-                    this.worldManager.getContext(),
-                    fromStar._renderScreen,
-                    toStar._renderScreen,
-                    loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
-                    fromStar._color
+                    this.canvasManager.context,
+                    fromStar.cs.renderScreen,
+                    toStar.cs.renderScreen,
+                    1 + loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
+                    fromStar.renderColor
                 );
             }
         })

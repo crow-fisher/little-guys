@@ -8,7 +8,7 @@ import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
-        return {"offsetScale":{"offsetX":322,"offsetY":85,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.2017353579175705,"opacityPosY":0.4630541871921182,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":3.2537960954446854,"minLuminance":2.2906724511930587,"maxLuminance":-1.323210412147505,"distPowerMult":1.131236442516269},"select":{}}
+        return {"offsetScale":{"offsetX":347,"offsetY":88,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.2017353579175705,"opacityPosY":0.4630541871921182,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":3.2537960954446854,"minLuminance":2.2212581344902387,"maxLuminance":-1.8872017353579178,"distPowerMult":1.131236442516269},"select":{}}
     }
     // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
