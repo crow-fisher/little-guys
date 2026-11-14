@@ -108,9 +108,11 @@ export class Star {
             this.renderColor,
             this.starLabel
         )
+        return 1;
     };
-    
+        
     process() {
         this.cs.process();
+        this.visibleOnScreen = this.cs.isVisibleOnScreen();
     }
 }

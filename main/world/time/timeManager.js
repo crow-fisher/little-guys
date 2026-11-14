@@ -96,7 +96,7 @@ export class TimeManager extends RuntimeComponent {
             this.lastTimeTick = Date.now();
         }
 
-        let m = 0.02;
+        let m = 0.2;
         this.dtRolling = this.dtRolling == 0 ? this.dt : (this.dtRolling * (1 - m) + m * this.dt);
         this.curDay += this.dDay;
     };

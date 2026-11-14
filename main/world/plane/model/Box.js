@@ -5,7 +5,7 @@ export class Box {
         this.posY = posY;
         this.lightSource = null;
         this.lightingSource = [];
-        this.lighting = [0, 0, 0];
+        this.lighting = [.3, .3, .3];
         this.squares = [];
         this.lastTouched = Date.now();
         this._lightingSourcePrev = [];

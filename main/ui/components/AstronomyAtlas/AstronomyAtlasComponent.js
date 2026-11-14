@@ -8,43 +8,39 @@ import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
-        let dc = {
-            offsetScale: {
-                offsetX: 87,
-                offsetY: 73,
-                sizeX: 485,
-                sizeY: 594
+        return {
+            "offsetScale": {
+                "offsetX": 288,
+                "offsetY": 79,
+                "sizeX": 461,
+                "sizeY": 595
             },
-            submenuState: {
-                plot: false,
-                label: false,
-                setup: false,
-                style: false,
-                select: false
+            "submenuState": {
+                "plot": false,
+                "label": false,
+                "setup": false,
+                "style": false,
+                "select": false
             },
-            plot: {},
-            label: {},
-            setup: {},
-            style: {
-                brightnessPosX: 0.088659793814433,
-                brightnessPosY: 0.0625,
-                brightnessC: 0.6701030927835051,
-                opacityPosX: 0.6618556701030928,
-                opacityPosY: 0.4479166666666667,
-                opacityC: 0.27010309278350514,
-                mode: 1,
-                minSize: 0.40987124463519314,
-                maxSize: 2.6180257510729614,
-                minLuminance: 2.8,
-                maxLuminance: -1.3814432989690708,
-                distPowerMult: 1.31
+            "plot": {},
+            "label": {},
+            "setup": {},
+            "style": {
+                "brightnessPosX": 0.6117136659436009,
+                "brightnessPosY": 0.4876847290640394,
+                "brightnessC": 0.46203904555314534,
+                "opacityPosX": 0.2017353579175705,
+                "opacityPosY": 0.4630541871921182,
+                "opacityC": 0.4685466377440347,
+                "mode": 1,
+                "minSize": -4.273318872017353,
+                "maxSize": 3.2537960954446854,
+                "minLuminance": 0.38177874186550975,
+                "maxLuminance": -1.323210412147505,
+                "distPowerMult": 1.131236442516269
             },
-            select: {}
-        };
-
-        dc = 
-{"offsetScale":{"offsetX":307,"offsetY":79,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.210412147505423,"brightnessPosY":0.4975369458128079,"brightnessC":0.46203904555314534,"opacityPosX":0.38611713665943603,"opacityPosY":0.270935960591133,"opacityC":0.4685466377440347,"mode":1,"minSize":-5.574837310195227,"maxSize":3.2537960954446854,"minLuminance":2.880694143167028,"maxLuminance":-1.106290672451193,"distPowerMult":1.131236442516269},"select":{}};
-        return dc;
+            "select": {}
+        }
     }
     // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
@@ -170,8 +166,8 @@ export class AstronomyAtlasComponent extends Component {
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max luminance"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMaxLuminance(), (v) => this.scvMaxLuminance(v),
             -10, 10, 180, 0.2, false));
-         
-            this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "dist power mult"))
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "dist power mult"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvDistPowerMult(), (v) => this.scvDistPowerMult(v),
             1.1, 2, 180, 0.2, false));
         // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))

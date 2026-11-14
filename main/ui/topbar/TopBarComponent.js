@@ -45,8 +45,9 @@ export class TopBarComponent extends RuntimeComponent {
             this.midSpacingEl,
             new TopBarToggle(this.uiManager, fontSize, "left", "active", TOPBAR_ASTRONOMY, () =>  "stars"),
             this.midSpacingEl,
+            
             this.midSpacingEl,
-            // new TopBarText(this.uiManager, fontSize, "left", () => this.textFps()),
+            new TopBarText(this.uiManager, fontSize, "left", () => this.textFps()),
             new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == 0, () => this.uiManager.setCurTimeScale(0), () => "\u23F8\uFE0E"),
             ...speedElements,
             this.midSpacingEl,
@@ -125,7 +126,7 @@ export class TopBarComponent extends RuntimeComponent {
     textFps() {
         let frameTime = this.uiManager.mainManager.timeManager.dtRolling;
         let fps = (1 / (frameTime / 1000));
-        return fps.toFixed(2) + " fps";
+        return fps.toFixed(2) + " fps; " + this.uiManager.mainManager.worldManager.starManager._numStarsRendered;
     }
 
 
