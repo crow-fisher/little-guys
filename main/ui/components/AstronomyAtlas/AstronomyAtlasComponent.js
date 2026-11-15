@@ -8,8 +8,7 @@ import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
-        return {"offsetScale":{"offsetX":24,"offsetY":70,"sizeX":475,"sizeY":561},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.2017353579175705,"opacityPosY":0.4630541871921182,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":3.2537960954446854,"minLuminance":2.2212581344902387,"maxLuminance":-1.8872017353579178,"distPowerMult":1.131236442516269,"constellationLineWidth":0.9568329718004339},"select":{}}
-    }
+        return {"offsetScale":{"offsetX":43,"offsetY":70,"sizeX":475,"sizeY":561},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.848421052631579,"opacityPosY":0.078125,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":1.6421052631578947,"minLuminance":1.1368421052631579,"maxLuminance":-7.473684210526316,"distPowerMult":1.131236442516269,"constellationLineWidth":0.023789473684210527},"select":{}}    }
 
     gcoStyle() {
         return this.config().style;

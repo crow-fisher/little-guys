@@ -1,4 +1,3 @@
-import { loadGD, UI_CAMERA_ROTATION_VEC } from "../../ui/UIData.js";
 import { CameraControlManager } from "./cameraControlManager.js";
 
 export class MouseCamera3ControlManager extends CameraControlManager {

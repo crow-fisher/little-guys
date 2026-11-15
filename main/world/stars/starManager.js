@@ -224,7 +224,7 @@ export class StarManager extends RuntimeComponent {
 
         this.loadedStars.forEach((star) => {
             star.sector = cartesianToSectorIndex(this.bounds, star.cartesian, this.numSectorsArr);
-            this.addStarToSector(star);
+            this.addStarToSector(star);     
         });
 
         this.iterateOnSectors((sector) => sector.processLoadedStars());

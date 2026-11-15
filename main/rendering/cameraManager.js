@@ -34,7 +34,7 @@ export class CameraManager extends RuntimeComponent {
         this.camera3Offset = [0, 0, 0];
         this.camera3OffsetDt = [0, 0, 0];
         this.camera3Movement = [0, 0, 0];
-        this.camera3Rotation = [0, 0, 0];
+        this.camera3Rotation = [-1.4768341805811342, -0.10738267148500116, 0];
         this.camera3RotationDt = [0, 0, 0];
         this.camera3Fov = 80;
 
