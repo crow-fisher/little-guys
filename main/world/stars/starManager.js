@@ -47,84 +47,7 @@ export class StarManager extends RuntimeComponent {
     postConstruct() {
         this.loadData();
     }
-
-    resetStarLabels() {
-        let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
-        let starLabelType = loadGD(UI_AA_LABEL_STARS);
-        let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
-
-        let aX = loadGD(UI_AA_PLOT_XKEY);
-        let aY = loadGD(UI_AA_PLOT_YKEY);
-        let aC = loadGD(UI_AA_SETUP_COLORMODE);
-
-        let stars = new Array();
-        this.iterateOnSectors((sector) => stars.push(...sector.loadedStars));
-
-        stars.forEach((star) => {
-            star.starLabel = star.getLabelForType(starLabelType, selectNamedStars, aX, aY, aC);
-            star.graphLabel = star.getLabelForType(graphLabelType, selectNamedStars, aX, aY, aC);
-        });
-    }
-
-    reprocessStarAltColoration() {
-        this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
-        if (this._rac_curKey == null || this._rac_curKey == "default") {
-            return;
-        }
-        this._rac_st = this.paramStatistics.get(this._rac_curKey);
-
-        this._rac_minValue = loadGD(UI_AA_SETUP_MIN);
-        this._rac_windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
-        this._rac_maxValue = lerp(this._rac_minValue, 1, this._rac_windowSize);
-        this._rac_powValue = loadGD(UI_AA_SETUP_POW);
-
-        let hsv = [70, 0.5, 1];
-        let hsv2 = [hsv[0] + loadGD(UI_SH_COLORSHIFT), hsv[1], hsv[2]];
-
-        let rgb = hsv2rgb(...hsv);
-        let rgb2 = hsv2rgb(...hsv2);
-
-        rgb[0] *= 255;
-        rgb[1] *= 255;
-        rgb[2] *= 255;
-        rgb2[0] *= 255;
-        rgb2[1] *= 255;
-        rgb2[2] *= 255;
-
-        this.stars.values().forEach((star) => {
-            this._rac_val = star[this._rac_curKey];
-            star._rac_val = star[this._rac_curKey];
-
-            if (this._rac_val == null) {
-                return;
-            }
-
-            this._rac_valNorm = Math.max(
-                this._rac_minValue,
-                Math.min(
-                    this._rac_maxValue,
-                    invlerp(this._rac_st[2], this._rac_st[3], this._rac_val)
-                )
-            );
-
-            this._rac_valNorm = Math.max(this._rac_valNorm, this._rac_minValue);
-            this._rac_valNorm = Math.min(this._rac_valNorm, this._rac_maxValue);
-
-            this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
-
-            combineColorMultArrDest(
-                rgb,
-                rgb2,
-                this._rac_v,
-                star.alt_color
-            );
-        });
-
-        this.iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
-    }
     render() {
-        // this.iterateOnSectors((sector) => sector.render())
-        // console.log(this.iterateOnSectorsAcc((sector) => sector.render()))
         this.sortAndRender();
         this.renderConstellations();
     }
@@ -157,13 +80,6 @@ export class StarManager extends RuntimeComponent {
         curSector.get(star.sector[2]).loadStar(star);
     }
 
-    iterateOnSectors(func) {
-        this.sectors.keys().forEach(
-            (x) => this.sectors.get(x).keys().forEach(
-                (y) => this.sectors.get(x).get(y).keys().forEach(
-                    (z) => func(this.sectors.get(x).get(y).get(z))
-                )));
-    }
 
     sortAndRender() {
         this._sectorsIterArr = this._sectorsIterArr ?? new Array();
@@ -177,17 +93,6 @@ export class StarManager extends RuntimeComponent {
                     (z) => this._numStarsRendered += this.sectors.get(x).get(y).get(z).render()
         )));
     }
-
-    iterateOnSectorsAcc(func) {
-        let acc = 0;
-        this.sectors.keys().forEach(
-            (x) => this.sectors.get(x).keys().forEach(
-                (y) => this.sectors.get(x).get(y).keys().forEach(
-                    (z) => acc += func(this.sectors.get(x).get(y).get(z))
-                )));
-        return acc;
-    }
-
 
     loadStar(star) {
         this.loadedStars.push(star);
@@ -229,7 +134,13 @@ export class StarManager extends RuntimeComponent {
 
         this.iterateOnSectors((sector) => sector.processLoadedStars());
     }
-
+    iterateOnSectors(func) {
+        this.sectors.keys().forEach(
+            (x) => this.sectors.get(x).keys().forEach(
+                (y) => this.sectors.get(x).get(y).keys().forEach(
+                    (z) => func(this.sectors.get(x).get(y).get(z))
+                )));
+    }
     processStarStatistics() {
         let params = new Array();
 

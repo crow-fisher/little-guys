@@ -116,14 +116,19 @@ export class StarSector {
 
     render() {
         if (!this.ready) {
-            return;
+            return 0;
         }
         if (!this._init) {
             this._init = true;
             this.renderPrepare();
         }
 
-        this.setFOVCameraPoint();
+        this.recalculateCSFlag = getVec3LengthSquared(this.starManager.cameraManager.camera3RotationDt) > 0 || (getVec3LengthSquared(this.starManager.cameraManager.camera3OffsetDt) > 10 ** -8);
+
+        if (this.recalculateCSFlag) {
+            this.renderPrepare();
+            this.setFOVCameraPoint();
+        }
 
         if (this.prevStarsRendered > 0 || this.fovCs.isVisibleOnScreen()) {
             this.prevStarsRendered = this.curStarsRendered;
@@ -135,63 +140,6 @@ export class StarSector {
                 this.getRenderMode()
             );
 
-            //         renderPointLabel(
-            //         this.starManager.worldManager.getContext(),
-            //         this.cornerCs.renderScreen[0],
-            //         this.cornerCs.renderScreen[1],
-            //         this.cornerCs.renderScreen[2],
-            //         8000 / this.cornerCs.distToCamera,
-            //         hsvToHex(0, 0, 0.5),
-            //         ""
-            //     ) 
-
-            //     renderPointLabel(
-            //         this.starManager.worldManager.getContext(),
-            //         this.brightnessCs.renderScreen[0],
-            //         this.brightnessCs.renderScreen[1],
-            //         this.brightnessCs.renderScreen[2],
-            //         8000 / this.brightnessCs.distToCamera,
-            //         hsvToHex(0, 0, 0),
-            //         ""
-            //     )
-
-            //     renderPointLabel(
-            //         this.starManager.worldManager.getContext(),
-            //         this.rootCs.renderScreen[0],
-            //         this.rootCs.renderScreen[1],
-            //         this.rootCs.renderScreen[2],
-            //         8000 / this.rootCs.distToCamera,
-            //         hsvToHex(0, 0, 1),
-            //         ""
-            //     )
-
-            //             renderPointLabel(
-            //         this.starManager.worldManager.getContext(),
-            //         this.centerCs.renderScreen[0],
-            //         this.centerCs.renderScreen[1],
-            //         this.centerCs.renderScreen[2],
-            //         8000 / this.centerCs.distToCamera,
-            //         hsvToHex(0, 0, 1),
-            //         ""
-            //     )
-
-            //         renderPointLabel(
-            // this.starManager.worldManager.getContext(),
-            //         this.fovCs.renderScreen[0],
-            //         this.fovCs.renderScreen[1],
-            //         this.fovCs.renderScreen[2],
-            //         8000 / this.fovCs.distToCamera,
-            //         hsvToHex(this.fovCs.distToCamera + 10 * getVec3Length(this.cartesian), 1, 1),
-            //         ""
-            //         );
-
-            //         renderLine(
-            //             this.starManager.worldManager.getContext(),
-            //             this.centerCs.renderScreen,
-            //             this.fovCs.renderScreen,
-            //             3,
-            //             hsvToHex(this.fovCs.distToCamera + 10 * getVec3Length(this.cartesian), 1, 1)
-            //         )
         }
         return this.curStarsRendered;
     }
@@ -245,11 +193,8 @@ export class StarSector {
     }
 
     renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
-        this.recalcFlag = false;
-
         this.recalcFlag |= this.starManager.astronomyAtlasComponent.dirtyConfig;
         this.recalcFlag |= (Math.min(this.curCameraDist, this.prevCameraDist) / Math.max(this.curCameraDist, this.prevCameraDist)) < 0.97;
-        this.recalcFlag |= (getVec3LengthSquared(this.starManager.cameraManager.camera3OffsetDt) + getVec3LengthSquared(this.starManager.cameraManager.camera3RotationDt)) > 0.0000000001;
         this._order = this._order ?? [];
         this._p = this._p ?? false;
         if (this.recalcFlag) {
@@ -273,8 +218,14 @@ export class StarSector {
 
         let ret = 0;
         this._biSet.forEach((i) => {
-            if (this._order[i]?.length > 0)
-                this._order[i].forEach((v) => ret += this.buckets[i][v].render());
+            if (this._order[i]?.length > 0) {
+                this._order[i].forEach((v) => {
+                    if (this.recalculateCSFlag) {
+                        ret += this.buckets[i][v].cs.process();
+                    }
+                    ret += this.buckets[i][v].render();
+                });
+            }
         });
         return ret;
     }

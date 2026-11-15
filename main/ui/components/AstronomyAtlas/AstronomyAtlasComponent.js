@@ -13,7 +13,6 @@ export class AstronomyAtlasComponent extends Component {
     gcoStyle() {
         return this.config().style;
     }
-
     // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
         return this.config().style.brightnessPosX;
