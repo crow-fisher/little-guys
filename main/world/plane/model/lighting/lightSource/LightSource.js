@@ -8,6 +8,8 @@ export class LightSource {
         this.color = structuredClone(config.colorConfig.rgbaArr);
         this.renderColor = rgbToRgba(...this.color, 0.1);
         this.init = 0;
+
+        this.radSquared = 500;
     }
 
     calculateLighting(box, tickBox, dest) {
@@ -16,9 +18,9 @@ export class LightSource {
 
     destroy(plane) {
         plane.tickBoxes.forEach((tickBox) => {
-            tickBox.lightingSource[this.id] = null;
-            tickBox._lightingSourcePrev[this.id] = null;
-            tickBox._lightingSourceDelt[this.id] = null;
+            tickBox.lightingSource.delete(this.id);
+            tickBox.lightingSourcePrev.delete(this.id);
+            tickBox.lightingSourceDelt.delete(this.id);
         });
     }
 

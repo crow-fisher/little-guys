@@ -4,13 +4,14 @@ export class Box {
         this.posX = posX;
         this.posY = posY;
         this.lightSource = null;
-        this.lightingSource = [];
+        this.lightingSource = new Map();
+        this.lightingSourcePrev = new Map();
+        this.lightingSourceDelt = new Map();
         this.lighting = [.3, .3, .3];
         this.squares = [];
         this.lastTouched = Date.now();
-        this._lightingSourcePrev = [];
-        this._lightingSourceDelt = [];        
-                                         }
+
+    }
     update(plane) {
         this._ltt = plane.planeManager.mainManager.timeManager.curDate;
         this.lightingHash = plane.lightingHash;
@@ -25,13 +26,13 @@ export class Box {
         }
         this.lightSource?.render(planeManager, this);
     }
-    nbLeft(plane, create=false) {
+    nbLeft(plane, create = false) {
         return plane.getBox(this.posX - 1, this.posY, create)
     }
-    nbRight(plane, create=false) {
+    nbRight(plane, create = false) {
         return plane.getBox(this.posX + 1, this.posY, create)
     }
-    nbBot(plane, create=false) {
+    nbBot(plane, create = false) {
         return plane.getBox(this.posX, this.posY + 1, create)
     }
 

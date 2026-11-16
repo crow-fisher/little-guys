@@ -48,7 +48,7 @@ export class LiveSquare extends Square {
     }
 
     processLighting(box) {
-        this.renderColor = rgbToRgba(...multiplyVectors(this.colorRgb, box.lighting), 1);
+        this.renderColor = rgbToRgba(...multiplyVectorsDest(this.colorRgb, box.lighting, this.renderColorRgb), 1);
     }
 
     randomize() {

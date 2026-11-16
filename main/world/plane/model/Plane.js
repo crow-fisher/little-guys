@@ -39,7 +39,7 @@ export class Plane {
                 let b = this.getBox(i, j);
                 if (b) {
                     this.tickBoxes.push(b);
-                    this.lightingHash |= (b.lightingSource.length * i * j);
+                    this.lightingHash |= (b.lightingSource.size * i * j);
                 }
             }
         }

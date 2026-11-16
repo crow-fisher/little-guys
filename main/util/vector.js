@@ -21,10 +21,13 @@ export function normalizeVec3Dest(vector, dest, toLength = 1) {
   dest[1] = vector[1] / toLength;
   dest[2] = vector[2] / toLength;
 }
-
 export function getVec2Length(vector) {
   return (vector[0] ** 2 + vector[1] ** 2) ** 0.5;
 }
+export function getVec2LengthSquared(vector) {
+  return (vector[0] ** 2 + vector[1] ** 2);
+}
+
 export function getVec3Length(vector) {
   return (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
 }
@@ -205,11 +208,13 @@ export function multiplyVectors(v1, v2) {
 export function multiplyVectorsDest(v1, v2, dest) {
   for (let i = 0; i < v1.length; i++)
     dest[i] = v1[i] * v2[i];
+  return dest;
 }
 
 export function multiplyVectorsMultDest(v1, v2, m, dest) {
   for (let i = 0; i < v1.length; i++)
     dest[i] = v1[i] * (m * v2[i]);
+  return dest;
 }
 
 export function vec3Dot(v1, v2) {

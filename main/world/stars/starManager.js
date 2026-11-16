@@ -160,7 +160,7 @@ export class StarManager extends RuntimeComponent {
     renderConstellations() {
         if (this.astronomyAtlasComponent.gcoStyle().constellationLineWidth <= 0) {
             return;
-        }
+        }   
 
         this.loadedConstellations.forEach((constellation) => {
             for (let i = 0; i < constellation.length; i++) {

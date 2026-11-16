@@ -1,4 +1,5 @@
-import { addVectors, copyVecValue, subtractVectorsDest } from "../../../../../util/vector.js";
+import { getDist } from "../../../../../common.js";
+import { addVectors, copyVecValue, getVec2Length, getVec2LengthSquared, subtractVectorsDest } from "../../../../../util/vector.js";
 import { LightSource } from "./LightSource.js";
 
 export class StaticLightSource extends LightSource {
@@ -12,14 +13,18 @@ export class StaticLightSource extends LightSource {
         }
 
         targetIter.forEach((tickBox) => {
-            tickBox.lightingSource[this.id] = tickBox.lightingSource[this.id] ?? [0, 0, 0];
-            tickBox._lightingSourcePrev[this.id] = tickBox._lightingSourcePrev[this.id] ?? [0, 0, 0];
-            tickBox._lightingSourceDelt[this.id] = tickBox._lightingSourceDelt[this.id] ?? [0, 0, 0];
-            this.calculateLighting(box, tickBox, tickBox.lightingSource[this.id]);
+            if (getDist(tickBox.posX, tickBox.posY, box.posX, box.posY, 1) > this.radSquared)
+                return;
 
-            subtractVectorsDest(tickBox.lightingSource[this.id], tickBox._lightingSourcePrev[this.id], tickBox._lightingSourceDelt[this.id]);
-            copyVecValue(tickBox.lightingSource[this.id], tickBox._lightingSourcePrev[this.id]);
-            addVectors(tickBox.lighting, tickBox._lightingSourceDelt[this.id])
+            tickBox.lightingSource.getOrInsert(this.id, [0, 0, 0])
+            tickBox.lightingSourcePrev.getOrInsert(this.id, [0, 0, 0])
+            tickBox.lightingSourceDelt.getOrInsert(this.id, [0, 0, 0])
+
+            this.calculateLighting(box, tickBox, tickBox.lightingSource.get(this.id));
+
+            subtractVectorsDest(tickBox.lightingSource.get(this.id), tickBox.lightingSourcePrev.get(this.id), tickBox.lightingSourceDelt.get(this.id));
+            copyVecValue(tickBox.lightingSource.get(this.id), tickBox.lightingSourcePrev.get(this.id));
+            addVectors(tickBox.lighting, tickBox.lightingSourceDelt.get(this.id))
         });
     }
 }
