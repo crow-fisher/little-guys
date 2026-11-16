@@ -76,7 +76,6 @@ export class CameraManager extends RuntimeComponent {
         this.windowWidth = this.totalWidth / this.camera2Zoom;
         this.windowHeight = this.totalHeight / this.camera2Zoom;
 
-
         this.windowWidthStart = this.camera2ViewportCenter[0] - (this.windowWidth / 2);
         this.windowHeightStart = this.camera2ViewportCenter[1] - (this.windowHeight / 2);
         this.windowWidthEnd = this.camera2ViewportCenter[0] + (this.windowWidth / 2);
@@ -112,12 +111,12 @@ export class CameraManager extends RuntimeComponent {
         this.setFrameCanvasRenderParams();
         this.setFramePerspectiveMatrix();
         this.frame += 1;
+    }
 
-        if (this.mouseManager.isButtonPressed(1)) {
-            this.camera3Offset = [0, 0, 0];
-            this.camera3OffsetDt = [0, 0, 0];
-            this.camera3Movement = [0, 0, 0];
-        }
+    resetCamera3Position() {
+        this.camera3Offset = [0, 0, 0];
+        this.camera3OffsetDt = [0, 0, 0];
+        this.camera3Movement = [0, 0, 0];
     }
 
     movementTick() {

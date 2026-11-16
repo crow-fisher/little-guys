@@ -1,3 +1,4 @@
+import { getVec3Length, getVec3LengthSquared } from "../../../util/vector.js";
 import { Component } from "../../Component.js";
 import { Container } from "../../Container.js";
 import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
@@ -8,7 +9,7 @@ import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
-        return {"offsetScale":{"offsetX":43,"offsetY":70,"sizeX":475,"sizeY":561},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.848421052631579,"opacityPosY":0.078125,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":1.6421052631578947,"minLuminance":1.1368421052631579,"maxLuminance":-7.473684210526316,"distPowerMult":1.131236442516269,"constellationLineWidth":0.023789473684210527},"select":{}}    }
+        return {"offsetScale":{"offsetX":43,"offsetY":70,"sizeX":475,"sizeY":639},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.6117136659436009,"brightnessPosY":0.4876847290640394,"brightnessC":0.46203904555314534,"opacityPosX":0.848421052631579,"opacityPosY":0.078125,"opacityC":0.4685466377440347,"mode":1,"minSize":-4.273318872017353,"maxSize":1.6421052631578947,"minLuminance":1.1368421052631579,"maxLuminance":-7.473684210526316,"distPowerMult":1.131236442516269,"constellationLineWidth":0.023789473684210527},"select":{}}    }
 
     gcoStyle() {
         return this.config().style;
@@ -145,8 +146,16 @@ export class AstronomyAtlasComponent extends Component {
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "constellation line"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoStyle().constellationLineWidth, (v) => this.gcoStyle().constellationLineWidth = v,
             -.1, 2, 180, 0.2, false));
+            
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "fov"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.uiManager.cameraManager.camera3Fov, (v) => {this.dirtyConfig = true; this.uiManager.cameraManager.camera3Fov = v},
+            5, 170, 180, 0.2, false));
         
-    
+        
+        this.container.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "reset camera",
+            () => getVec3LengthSquared(this.uiManager.cameraManager.camera3Offset) > 0, () => this.uiManager.cameraManager.resetCamera3Position(),
+            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
             // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
         // this.container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 

@@ -1,4 +1,3 @@
-import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../ui/UIData.js";
 import { addVec3Dest, copyVecValue, getVec3Length, subtractVectorsDest } from "../../util/vector.js";
 
 export class CoordinateSet {

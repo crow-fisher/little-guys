@@ -5,7 +5,6 @@ import { addVec4Mult, multiplyVectorByScalar } from "../../util/vector.js";
 import { Plane } from "./model/Plane.js";
 import { LiveSquare } from "./model/square/LiveSquare.js";
 import { StaticSquare } from "./model/square/StaticSquare.js";
-import { LightSource } from "./model/lighting/lightSource/LightSource.js";
 import { StaticLightSource } from "./model/lighting/lightSource/StaticLightSource.js";
 
 export class PlaneManager extends RuntimeComponent {
@@ -15,7 +14,6 @@ export class PlaneManager extends RuntimeComponent {
         this.staticPlanes = [];
         this.livePlanes = [];
         this.planes = [null, this.staticPlanes, this.livePlanes]
-        this.lightingManagers = [null, this.staticLightManager, this.liveLightManager];
     }
 
     di(mainManager) {

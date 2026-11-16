@@ -25,6 +25,7 @@ export class UIManager extends RuntimeComponent {
 
     di(mainManager) {
         super.di(mainManager);
+        this.cameraManager = mainManager.cameraManager;
         this.components.forEach((c) => c.di(mainManager));
     }
 
