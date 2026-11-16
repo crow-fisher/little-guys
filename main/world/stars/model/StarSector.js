@@ -118,20 +118,16 @@ export class StarSector {
         if (!this.ready) {
             return 0;
         }
-        if (!this._init) {
-            this._init = true;
-            this.renderPrepare();
-        }
-
-        this.recalculateCSFlag = getVec3LengthSquared(this.starManager.cameraManager.camera3RotationDt) > 0 || (getVec3LengthSquared(this.starManager.cameraManager.camera3OffsetDt) > 10 ** -8);
+        let epsilon = 10 ** -8;
+        this.recalculateCSFlag = getVec3LengthSquared(this.starManager.cameraManager.camera3RotationDt) > epsilon || (getVec3LengthSquared(this.starManager.cameraManager.camera3OffsetDt) > epsilon);
 
         if (this.recalculateCSFlag) {
             this.renderPrepare();
             this.setFOVCameraPoint();
+            this.recalcFlag = true;
         }
 
-        if (this.prevStarsRendered > 0 || this.fovCs.distToCamera < 1000 || this.fovCs.isVisibleOnScreen()) {
-            this.prevStarsRendered = this.curStarsRendered;
+        if (this.recalcFlag || this.curStarsRendered > 0) {
             this.curStarsRendered = this.renderStars(
                 this.getLuminanceParams(),
                 this.getSizeParams(),
@@ -221,7 +217,7 @@ export class StarSector {
             if (this._order[i]?.length > 0) {
                 this._order[i].forEach((v) => {
                     if (this.recalculateCSFlag) {
-                        ret += this.buckets[i][v].cs.process();
+                        this.buckets[i][v].cs.process();
                     }
                     ret += this.buckets[i][v].render();
                 });

@@ -175,18 +175,9 @@ export class StarManager extends RuntimeComponent {
                     continue;
                 }
 
-                fromStar?.process();
-                toStar?.process();
-
                 if (fromStar.cs.screen[2] < 0 || toStar.cs.screen[2] < 0) {
                     return;
                 }
-
-
-                fromStar?.render();
-                toStar?.render();
-
-
 
                 if (fromStar?.cs.renderScreen == null || toStar?.cs.renderScreen == null) {
                     return;
