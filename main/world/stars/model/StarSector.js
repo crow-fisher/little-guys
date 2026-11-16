@@ -130,7 +130,7 @@ export class StarSector {
             this.setFOVCameraPoint();
         }
 
-        if (this.prevStarsRendered > 0 || this.fovCs.isVisibleOnScreen()) {
+        if (this.prevStarsRendered > 0 || this.fovCs.distToCamera < 1000 || this.fovCs.isVisibleOnScreen()) {
             this.prevStarsRendered = this.curStarsRendered;
             this.curStarsRendered = this.renderStars(
                 this.getLuminanceParams(),
@@ -274,14 +274,12 @@ export class StarSector {
     }
 
     processLoadedStars() {
-        this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
 
         let lumenBucketSize = 0.004;
 
         this.buckets = new Array();
-        this.bucketLumensCutoffs = new Array();
-
+        this.bucketLumensCutoffs = [];
         let curBucket = 0;
         let curLumensCutoff = this.loadedStars.at(0).lumens + lumenBucketSize;
         let star;
@@ -290,12 +288,13 @@ export class StarSector {
             if (star.lumens > curLumensCutoff) {
                 this.bucketLumensCutoffs[curBucket] = curLumensCutoff;
                 curBucket += 1;
-                curLumensCutoff = Math.max(curLumensCutoff + lumenBucketSize, star.lumens);
+                curLumensCutoff = Math.max(curLumensCutoff, star.lumens) + lumenBucketSize;
             }
             this.buckets[curBucket] = this.buckets[curBucket] ?? new Array();
             this.buckets[curBucket].push(star);
             star.bucket = curBucket;
         }
+        this.bucketLumensCutoffs[curBucket] = curLumensCutoff;
         this.ready = true;
     }
 

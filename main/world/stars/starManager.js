@@ -25,7 +25,7 @@ export class StarManager extends RuntimeComponent {
         this.stars = new Map(); // HIP id
         this.hdMap = new Map(); // HD id
         this.constellationStars = new Set();
-        
+
         this.paramStatistics = new Map();
 
         this.numSectorsArr = 1;
@@ -36,8 +36,8 @@ export class StarManager extends RuntimeComponent {
 
     }
 
-    di(mainManager) { 
-        super.di(mainManager); 
+    di(mainManager) {
+        super.di(mainManager);
         this.uiManager = this.mainManager.uiManager;
         this.cameraManager = this.mainManager.cameraManager;
         this.canvasManager = this.mainManager.canvasManager;
@@ -91,7 +91,7 @@ export class StarManager extends RuntimeComponent {
             (x) => this.sectors.get(x).keys().forEach(
                 (y) => this.sectors.get(x).get(y).keys().forEach(
                     (z) => this._numStarsRendered += this.sectors.get(x).get(y).get(z).render()
-        )));
+                )));
     }
 
     loadStar(star) {
@@ -129,7 +129,7 @@ export class StarManager extends RuntimeComponent {
 
         this.loadedStars.forEach((star) => {
             star.sector = cartesianToSectorIndex(this.bounds, star.cartesian, this.numSectorsArr);
-            this.addStarToSector(star);     
+            this.addStarToSector(star);
         });
 
         this.iterateOnSectors((sector) => sector.processLoadedStars());
@@ -171,15 +171,27 @@ export class StarManager extends RuntimeComponent {
                 let fromStar = this.stars.get(from);
                 let toStar = this.stars.get(to);
 
+                if (fromStar == null || toStar == null) {
+                    continue;
+                }
+
                 fromStar?.process();
                 toStar?.process();
+
+                if (fromStar.cs.screen[2] < 0 || toStar.cs.screen[2] < 0) {
+                    return;
+                }
+
+
+                fromStar?.render();
+                toStar?.render();
+
+
 
                 if (fromStar?.cs.renderScreen == null || toStar?.cs.renderScreen == null) {
                     return;
                 }
-                if (fromStar.cs.screen[2] < 0 || toStar.cs.screen[2] < 0) {
-                    return;
-                }
+
                 renderLine(
                     this.canvasManager.context,
                     fromStar.cs.renderScreen,
