@@ -42,7 +42,7 @@ export class CanvasManager extends RuntimeComponent {
         py -= this.cameraManager.windowHeightStart;
         py *= this.cameraManager.camera2Zoom;
         this.context.font = size + "px courier";
-        this.context.strokeText(text, px, py);
+        this.context.fillText(text, px, py);
     }
 
     postConstruct() {

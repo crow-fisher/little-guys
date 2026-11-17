@@ -6,6 +6,7 @@ import { Plane } from "./model/Plane.js";
 import { LiveSquare } from "./model/square/LiveSquare.js";
 import { StaticSquare } from "./model/square/StaticSquare.js";
 import { StaticLightSource } from "./model/lighting/lightSource/StaticLightSource.js";
+import { PathTracedLightSource } from "./model/lighting/lightSource/PathTracedLightSource.js";
 
 export class PlaneManager extends RuntimeComponent {
     constructor(blockManager) {
@@ -136,7 +137,7 @@ export class PlaneManager extends RuntimeComponent {
                     }
                 } else {
                     if (box.lightSource == null) {
-                        box.lightSource = new StaticLightSource(this.lightSourceId++, this.mcc);
+                        box.lightSource = new PathTracedLightSource(this.lightSourceId++, this.mcc);
                     }
                 }
                 break;
