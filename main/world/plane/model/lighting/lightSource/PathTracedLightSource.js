@@ -41,12 +41,5 @@ export class PathTracedLightSource extends LightSource {
 
     update(plane, box) {
         super.update(plane, box);
-        this.raysSort.forEach((ray) => {
-            let i = 0;
-            ray.sort((a, b) =>
-                getDist(a.posX, a.posY, box.posX, box.posY) -
-                getDist(b.posX, b.posY, box.posX, box.posY)
-            );
-        })
     }
 }
