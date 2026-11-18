@@ -1,6 +1,7 @@
 
 export class Box {
-    constructor(posX, posY) {
+    constructor(bid, posX, posY) {
+        this.bid = bid;
         this.posX = posX;
         this.posY = posY;
         this.lightSource = null;

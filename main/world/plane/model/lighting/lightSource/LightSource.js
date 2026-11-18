@@ -9,11 +9,11 @@ export class LightSource {
         this.renderColor = rgbToRgba(...this.color, 0.1);
         this.init = 0;
 
-        this.radSquared = 500;
+        this.radSquared = 5000;
     }
 
-    calculateLighting(box, tickBox, dest) {
-        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * Math.max(16, getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1))), dest)
+    calculateLighting(lightSource, box, tickBox) {
+        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * Math.max(16, getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1))), tickBox.lightingSource.get(lightSource.id));
     }
 
     destroy(plane) {
@@ -37,15 +37,12 @@ export class LightSource {
             if (getDist(tickBox.posX, tickBox.posY, box.posX, box.posY, 1) > this.radSquared)
                 return;
 
-            tickBox.lightingSource.getOrInsert(this.id, [0, 0, 0])
-            tickBox.lightingSourcePrev.getOrInsert(this.id, [0, 0, 0])
-            tickBox.lightingSourceDelt.getOrInsert(this.id, [0, 0, 0])
+            tickBox.lightingSource.set(this.id, tickBox.lightingSource.get(this.id) ?? [0, 0, 0])
+            tickBox.lightingSourcePrev.set(this.id, tickBox.lightingSourcePrev.get(this.id) ?? [0, 0, 0])
+            tickBox.lightingSourceDelt.set(this.id, tickBox.lightingSourceDelt.get(this.id) ?? [0, 0, 0])
 
-            this.calculateLighting(box, tickBox, tickBox.lightingSource.get(this.id));
+            this.calculateLighting(this, box, tickBox);
 
-            subtractVectorsDest(tickBox.lightingSource.get(this.id), tickBox.lightingSourcePrev.get(this.id), tickBox.lightingSourceDelt.get(this.id));
-            copyVecValue(tickBox.lightingSource.get(this.id), tickBox.lightingSourcePrev.get(this.id));
-            addVectors(tickBox.lighting, tickBox.lightingSourceDelt.get(this.id))
         });
     }
     render(planeManager, box) {

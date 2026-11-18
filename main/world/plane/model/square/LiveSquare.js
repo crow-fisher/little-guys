@@ -17,12 +17,10 @@ export class LiveSquare extends Square {
     update(box, planeManager) {
         this.gravityPhysics(box, planeManager);
         this.processLighting(box);
-        this.text = box.text;
     }
     render(planeManager) {
         if (planeManager.mcc.live.visibilityMask & 1 == 1)
         super.render(planeManager);
-        this.renderText(planeManager, this.text);
     }
 
     processMaterialConfig(materialConfig) {

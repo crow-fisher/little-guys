@@ -4,6 +4,7 @@ export class Plane {
     constructor(planeManager) {
         this.planeManager = planeManager;
         this.boxes = new Map();
+        this.bid = 0;
         this.tickBoxes = [];
         this.newBoxes = new Set();
     }
@@ -11,7 +12,7 @@ export class Plane {
     getBox(px, py, create = false) {
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
         if (create && this.boxes.get(px).get(py) == null) {
-            this._b = new Box(px, py);
+            this._b = new Box(this.bid++, px, py);
             this.boxes.get(px).set(py, this._b);
             this.newBoxes.add(this._b);
         } else {
