@@ -10,8 +10,8 @@ export class Box {
         this.lightingSourceDelt = new Map();
         this.lighting = [.3, .3, .3];
         this.squares = [];
+        this.lfrSquare = 0;
         this.lastTouched = Date.now();
-
     }
     update(plane) {
         this._ltt = plane.planeManager.mainManager.timeManager.curDate;

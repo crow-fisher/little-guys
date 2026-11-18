@@ -6,7 +6,22 @@ export class Plane {
         this.boxes = new Map();
         this.bid = 0;
         this.tickBoxes = [];
-        this.newBoxes = new Set();
+        this.dirtyBoxes = new Set();
+    }
+
+    move(square, toBox, fromBox) {
+        if (fromBox) {
+            fromBox.squares[square.PID] = null;
+            this.dirtyBoxes.add(fromBox);
+            fromBox.lfrSquare -= square.lfr;
+        }
+        if (toBox && toBox.squares[square.PID] == null) {
+            toBox.squares[square.PID] = square;
+            this.dirtyBoxes.add(toBox);
+            toBox.lfrSquare += square.lfr;
+        } else {
+            square.destroy();
+        }
     }
 
     getBox(px, py, create = false) {
@@ -14,11 +29,11 @@ export class Plane {
         if (create && this.boxes.get(px).get(py) == null) {
             this._b = new Box(this.bid++, px, py);
             this.boxes.get(px).set(py, this._b);
-            this.newBoxes.add(this._b);
+            this.dirtyBoxes.add(this._b);
         } else {
             this._b = this.boxes.get(px).get(py);
             if (this._b && this.planeManager.mainManager.timeManager.curDay - this._b._ltt > this.planeManager.mainManager.timeManager.dt) {
-                this.newBoxes.add(this._b);
+                this.dirtyBoxes.add(this._b);
             }
         }
         return this._b
@@ -27,7 +42,7 @@ export class Plane {
     update() {
         this.updateTickBoxes();
         this.updateBoxes();
-        this.newBoxes.clear();
+        this.dirtyBoxes.clear();
     }
 
     updateTickBoxes() {
@@ -49,7 +64,7 @@ export class Plane {
     updateBoxes() {
         this.tickBoxes.forEach((b) => {
             if (b.lightingHash != this.lightingHash) {
-                this.newBoxes.add(b);
+                this.dirtyBoxes.add(b);
             };
             b.update(this);
         });

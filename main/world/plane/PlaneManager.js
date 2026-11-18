@@ -122,10 +122,11 @@ export class PlaneManager extends RuntimeComponent {
         switch (this.mcc.live.mode) {
             case 0:
                 if (this.mouseManager.isButtonPressed(2)) {
-                    box.squares[this.mcc.plane.active]?.destroy();
-                    box.squares[this.mcc.plane.active] = null;
+                    if (box.squares[this.mcc.plane.active] != null) {
+                        this.activePlane().move(box.squares[this.mcc.plane.active], null, box);
+                    }
                 } else {
-                    box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig);
+                    this.activePlane().move(new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig), box, null)
                 }
                 break;
             case 1:

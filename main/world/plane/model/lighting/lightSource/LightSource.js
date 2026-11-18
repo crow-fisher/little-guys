@@ -9,11 +9,11 @@ export class LightSource {
         this.renderColor = rgbToRgba(...this.color, 0.1);
         this.init = 0;
 
-        this.radSquared = 5000;
+        this.radSquared = 50000;
     }
 
-    calculateLighting(lightSource, box, tickBox) {
-        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * Math.max(16, getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1))), tickBox.lightingSource.get(lightSource.id));
+    calculateLighting(box, tickBox) {
+        return multiplyVectorByScalarDest(this.color, this.color[3] / (30 * Math.max(16, getDist(box.posX, box.posY, tickBox.posX, tickBox.posY, 1))), tickBox.lightingSource.get(this.id));
     }
 
     destroy(plane) {
@@ -27,7 +27,7 @@ export class LightSource {
     update(plane, box) {
         let targetIter;
         if (this.init) {
-            targetIter = plane.newBoxes;
+            targetIter = plane.dirtyBoxes;
         } else {
             targetIter = plane.tickBoxes;
             this.init = 1;
@@ -41,7 +41,7 @@ export class LightSource {
             tickBox.lightingSourcePrev.set(this.id, tickBox.lightingSourcePrev.get(this.id) ?? [0, 0, 0])
             tickBox.lightingSourceDelt.set(this.id, tickBox.lightingSourceDelt.get(this.id) ?? [0, 0, 0])
 
-            this.calculateLighting(this, box, tickBox);
+            this.calculateLighting(box, tickBox);
 
         });
     }

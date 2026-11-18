@@ -10,6 +10,7 @@ export class LiveSquare extends Square {
         super(posX, posY);
         this.PID = 1;
         this.colorBaseArr = [[[201, 144, 98], [61, 45, 33], [139, 76, 51]], [[60, 71, 134], [3, 0, 3], [130, 130, 151]]];
+        this.lfr = 1;
         this.processMaterialConfig(materialConfig);
         this.randomize();
         this.processColor();
@@ -74,8 +75,7 @@ export class LiveSquare extends Square {
         }
         let nbBot = box.nbBot(plane, true);
         if (nbBot.squares[this.PID] == null) {
-            box.squares[this.PID] = null;
-            nbBot.squares[this.PID] = this;
+            plane.move(this, nbBot, box)
             this.posY += 1;
         }
 

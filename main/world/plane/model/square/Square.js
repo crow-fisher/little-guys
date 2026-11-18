@@ -9,6 +9,7 @@ export class Square {
         this.height = 1;
         this.renderColorRgb = [0, 0, 0];
         this.renderColor = "rgba(173, 25, 173, 0.5)"; 
+        this.lfr = 0;
     }
 
     destroy() {
