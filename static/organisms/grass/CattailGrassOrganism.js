@@ -1,10 +1,7 @@
-import { randNumber, randRange } from "../../common.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, TYPE_GRASS } from "../Stages.js";
-// import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
-import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
+import { STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS } from "../Stages.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
-import { UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
+import { _lightLevelDisplayExposureAdjustment, baseOrganism_dnm } from "../BaseOrganism.js";
+import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 import { BaseGrassOrganism } from "./BaseGrassOrganism.js";
 
@@ -18,7 +15,6 @@ cattail_dnm[_waterPressureOverwaterThresh] = 1;
 cattail_dnm[_waterPressureWiltThresh] = -.25;
 cattail_dnm[_lightDecayValue] = 5.23;
 cattail_dnm[_lightLevelDisplayExposureAdjustment] = -.37;
-
 
 export class CattailGrassOrganism extends BaseGrassOrganism {
     constructor(square, parentId) {

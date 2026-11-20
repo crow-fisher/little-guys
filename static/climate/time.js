@@ -79,6 +79,18 @@ export function getSeekTimeTarget() {
     return seekTimeTarget;
 }
 
+export function tempToColorForStar(temperature) {
+    let dc = calculateTempColor(temperature);
+    let rgb = [dc.r, dc.g, dc.b];
+    
+    if (starValueDownwardMult != null) {
+        let hsv = rgb2hsv(...rgb);
+        hsv[2] /= starValueDownwardMult;
+        rgb = hsv2rgb(...hsv);
+    }
+    return rgb;
+}
+
 // for time skipping 
 let startSeekTime = 0;
 let seekTimeTarget = 0;

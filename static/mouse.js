@@ -1,4 +1,5 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetCanvasLastMoveOffset, resetZoom } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY} from "./canvas.js";
+import { resetCanvasLastMoveOffset, resetZoom } from "./canvasUtil.js"
 import { setPrevManipulationOffset } from "./manipulation.js";
 import { isEyedropperOrMixerClicked, loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";

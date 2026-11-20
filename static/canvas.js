@@ -1,9 +1,6 @@
-import { COLOR_VERY_FUCKING_RED } from "./colors.js";
-import { reset } from "./globalOperations.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
-import { getLastLastMoveOffset, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
-import { iterateOnOrganisms } from "./organisms/orgOperations.js";
+import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
 
 let BASE_SIZE = 4;
@@ -18,6 +15,16 @@ function resetZoomArr() {
     for (let i = 1; i < 20; i += 1) {
         zoom_arr.push(i);
     }
+}
+
+let lastMouseWheelState = 0;
+
+export function getSingletonMouseWheelState() {
+    // reasoning - if we're calling this method, we're catching a mouse wheel scroll state, right? 
+    // and you probably don't want to scroll on two things at once. so it's fine for this to be a global
+    let ret = structuredClone(lastMouseWheelState);
+    lastMouseWheelState = 0;
+    return ret;
 }
 
 export function getCurZoom() {
@@ -96,7 +103,6 @@ function resetCornerLocations() {
     frameYMin = Math.floor(Math.max(0, cy - (height / 2)));
     frameYMax = Math.ceil(cy + (height / 2));
 }
-
 
 let _c_UI_CANVAS_SQUARES_ZOOM = getCurZoom();
 let _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
@@ -407,112 +413,22 @@ export function zoomCanvasSquareText(x, y, text) {
     );
 }
 
-export function zoom(event) {
-    event.preventDefault();
-    if (loadGD(UI_PALETTE_BLOCKS)) {
-        if (isKeyPressed(KEY_SHIFT)) {
-            if (loadGD(UI_PALETTE_SELECT) == loadGD(UI_PALETTE_SURFACE)) {
-                saveGD(UI_LIGHTING_SURFACE, Math.max(.0000001, Math.min(.999999999, loadGD(UI_LIGHTING_SURFACE) + event.deltaY * .00005)));
-                return;
-            }
-            let strength = loadGD(UI_PALETTE_STRENGTH);
-            if (event.deltaY > 0) {
-                strength *= (0.999 ** event.deltaY);
-            } else {
-                for (let i = 0; i < Math.abs(event.deltaY); i++) {
-                    strength += (1 - strength) * 0.001;
-                }
-            }
-            saveGD(UI_PALETTE_STRENGTH, strength);
-            return;
-        }
+export function fillCanvasPointArr(pArr) {
+    MAIN_CONTEXT.beginPath()
+    MAIN_CONTEXT.moveTo(...pArr[0]);
+    pArr.slice(1).forEach(p => MAIN_CONTEXT.lineTo(...p));
+    MAIN_CONTEXT.closePath();
+    MAIN_CONTEXT.fill();
+}
 
-        if (isKeyPressed(KEY_CONTROL)) {
-            let size = loadGD(UI_PALETTE_SIZE);
-            size += event.deltaY * 0.005;
-            size = Math.min(Math.max(size, 0), 14)
-            saveGD(UI_PALETTE_SIZE, size);
-            return;
-        }
+export function decayVec(key, frac=0.7) {
+    let val = loadGD(key);
+    for (let i = 0; i < val.length; i++) {
+        val[i] *= frac;
     }
-    doZoom(event.deltaY);
+    saveGD(key, val);
 }
 
-
-
-export function doZoom(deltaY) {
-    let lastMoveOffset = getLastMoveOffset();
-    if (lastMoveOffset == null || isMiddleMouseClicked()) {
-        return;
-    }
-    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
-    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
-
-    let x = 1 - lastMoveOffset.x / totalWidth;
-    let y = 1 - lastMoveOffset.y / totalHeight;
-    let startZoom = getCurZoom();
-
-    let zoom_idx = loadGD(UI_CANVAS_SQUARES_ZOOM);
-
-    if (deltaY < 0) {
-        zoom_idx = Math.min(zoom_arr.length - 1, zoom_idx + 1);
-    } else {
-        zoom_idx = Math.max(0, zoom_idx - 1);
-    }
-
-    saveGD(UI_CANVAS_SQUARES_ZOOM, zoom_idx);
-
-    //  Math.min(Math.max(getCurZoom() + deltaY * -0.001, 1), 100);
-    let endZoom = getCurZoom();
-
-    let startWidth = totalWidth / startZoom;
-    let endWidth = totalWidth / endZoom;
-
-    let startHeight = totalHeight / startZoom;
-    let endHeight = totalHeight / endZoom;
-
-    let widthDiff = endWidth - startWidth;
-    let heightDiff = endHeight - startHeight;
-
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + Math.floor((widthDiff * (x - 0.5))));
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + Math.floor((heightDiff * (y - 0.5))));
-    recacheCanvasPositions();
-}
-export function resetZoom() {
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 5000);
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 5000);
-
-
-    saveGD(UI_CANVAS_SQUARES_ZOOM, 2);
-    recacheCanvasPositions();
-}
-
-export function canvasPanRoutine() {
-    if (!isMiddleMouseClicked())
-        return;
-    panCanvas();
-}
-
-let canvasLastMoveOffset = {x: 0, y: 0};
-
-export function resetCanvasLastMoveOffset() {
-    canvasLastMoveOffset = getLastMoveOffset();
-}
-
-function panCanvas() {
-    let llmo = canvasLastMoveOffset;
-    let lmo = getLastMoveOffset();
-    let dx = llmo.x - lmo.x;
-    let dy = llmo.y - lmo.y;
-    moveCamera(dx, dy, 1/(getCurZoom()));
-    canvasLastMoveOffset = lmo;
-}
-
-export function moveCamera(x, y, mult=40) {
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * mult));
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * mult));
-    recacheCanvasPositions();
-}
 export function getCanvasWidth() {
     return CANVAS_SQUARES_X * BASE_SIZE;
 }
